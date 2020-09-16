@@ -1,3 +1,9 @@
+<p align="center">
+
+![](./companies-house-laravel.png)
+
+</p>
+
 # A Laravel wrapper to get companies house information and validate company numbers
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/juststeveking/companies-house-laravel.svg?style=flat-square)](https://packagist.org/packages/juststeveking/companies-house-laravel)
