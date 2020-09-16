@@ -5,7 +5,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/juststeveking/companies-house-laravel.svg?style=flat-square)](https://packagist.org/packages/juststeveking/companies-house-laravel)
 
 
-A Laravel wrapper to get companies house information and validate company numbers
+A Laravel wrapper to get companies house information and validate company numbers. This is a work in progress and more methods will be added to the API as they are required. Currently only Company Number is able to be passed to the API.
 ## Installation
 
 You can install the package via composer:
