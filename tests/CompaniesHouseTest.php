@@ -23,10 +23,10 @@ class CompaniesHouseTest extends TestCase
                 'errors' => [
                     [
                         'type' => 'ch:service',
-                        'error' => 'company-profile-not-found'
-                    ]
-                ]
-            ], 404, ['Headers'])
+                        'error' => 'company-profile-not-found',
+                    ],
+                ],
+            ], 404, ['Headers']),
         ]);
 
         $this->api = Client::make();
@@ -41,7 +41,7 @@ class CompaniesHouseTest extends TestCase
         $number = '02627406';
         $company = $this->api->company($number);
 
-        if (!is_null($company->number)) {
+        if (! is_null($company->number)) {
             $this->assertEquals(
                 $number,
                 $company->number
