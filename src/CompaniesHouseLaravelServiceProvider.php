@@ -9,7 +9,7 @@ use JustSteveKing\CompaniesHouseLaravel\Rules\CompanyNumber;
 class CompaniesHouseLaravelServiceProvider extends ServiceProvider
 {
     /**
-     * @return void
+     * inheritDoc
      */
     public function boot()
     {
@@ -24,6 +24,9 @@ class CompaniesHouseLaravelServiceProvider extends ServiceProvider
         });
     }
 
+    /**
+     * @inheritDoc
+     */
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/companies-house-laravel.php', 'companies-house-laravel');
