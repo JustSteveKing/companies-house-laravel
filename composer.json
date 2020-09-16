@@ -50,7 +50,7 @@
                 "JustSteveKing\\CompaniesHouseLaravel\\CompaniesHouseLaravelServiceProvider"
             ],
             "aliases": {
-                "CompaniesHouseLaravel": "JustSteveKing\\CompaniesHouseLaravel\\ClientFacade"
+                "ClientFacade": "JustSteveKing\\CompaniesHouseLaravel\\ClientFacade"
             }
         }
     },
