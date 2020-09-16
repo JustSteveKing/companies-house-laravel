@@ -14,13 +14,6 @@ You can install the package via composer:
 composer require juststeveking/companies-house-laravel
 ```
 
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --provider="JustSteveKing\CompaniesHouseLaravel\CompaniesHouseLaravelServiceProvider" --tag="migrations"
-php artisan migrate
-```
-
 You can publish the config file with:
 ```bash
 php artisan vendor:publish --provider="JustSteveKing\CompaniesHouseLaravel\CompaniesHouseLaravelServiceProvider" --tag="config"
@@ -39,6 +32,8 @@ return [
 
 ## Usage
 
+Using it inline:
+
 ``` php
 use JustSteveKing\CompaniesHouseLaravel\Client;
 
@@ -47,6 +42,18 @@ $api = Client::make();
 
 // Get Company information from a company number
 $company = $api->company('company-number');
+```
+
+Using the validation inline:
+
+```php
+$this->validate($request, [
+    'company_number' => [
+        'required',
+        'string',
+        Rule::companyNumber()
+    ]
+]);
 ```
 
 ## Testing

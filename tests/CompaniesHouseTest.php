@@ -2,6 +2,7 @@
 
 namespace JustSteveKing\CompaniesHouseLaravel\Tests;
 
+use Illuminate\Validation\Rule;
 use JustSteveKing\CompaniesHouseLaravel\Client;
 use JustSteveKing\CompaniesHouseLaravel\Rules\CompanyNumber;
 
@@ -67,5 +68,23 @@ class CompaniesHouseTest extends TestCase
     {
         $number = '02627406';
         $this->assertTrue($this->rule->passes('test', $number));
+    }
+
+    /**
+     * @test
+     */
+    public function it_fails_when_using_the_rule_macro()
+    {
+        $number = 'obviously_fake';
+        $this->assertFalse(Rule::companyNumber()->passes('test', $number));
+    }
+
+    /**
+     * @test
+     */
+    public function it_passes_when_using_the_rule_macro()
+    {
+        $number = '02627406';
+        $this->assertTrue(Rule::companyNumber()->passes('test', $number));
     }
 }

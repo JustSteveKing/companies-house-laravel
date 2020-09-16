@@ -19,7 +19,7 @@ class CompaniesHouseLaravelServiceProvider extends ServiceProvider
             ], 'config');
         }
 
-        Rule::macro('company_number', function () {
+        Rule::macro('companyNumber', function () {
             return new CompanyNumber(Client::make());
         });
     }
