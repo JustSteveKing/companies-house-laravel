@@ -7,7 +7,7 @@
 # A Laravel wrapper to get companies house information and validate company numbers
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/juststeveking/companies-house-laravel.svg?style=flat-square)](https://packagist.org/packages/juststeveking/companies-house-laravel)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/juststeveking/companies-house-laravel/run-tests?label=tests)](https://github.com/juststeveking/companies-house-laravel/actions?query=workflow%3Arun-tests+branch%3Amaster)
+![Tests](https://github.com/juststeveking/companies-house-laravel/workflows/Tests/badge.svg?branch=master)
 [![Total Downloads](https://img.shields.io/packagist/dt/juststeveking/companies-house-laravel.svg?style=flat-square)](https://packagist.org/packages/juststeveking/companies-house-laravel)
 
 
