@@ -19,7 +19,7 @@ class CompaniesHouseTest extends TestCase
     {
         parent::setUp();
 
-        Http::fake([
+        $this->api = Client::fake([
             config('companies-house-laravel.api.url') . '/company/02627406' => Http::response($this->data(), 200, ['Headers']),
             config('companies-house-laravel.api.url') . '/company/obviously_fake' => Http::response([
                 'errors' => [
@@ -34,8 +34,6 @@ class CompaniesHouseTest extends TestCase
                 'items' => [],
             ], 200, ['Headers']),
         ]);
-
-        $this->api = Client::make();
         $this->rule = new CompanyNumber($this->api);
     }
 

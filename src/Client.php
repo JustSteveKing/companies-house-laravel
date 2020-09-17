@@ -15,11 +15,27 @@ class Client
     private string $key;
 
     /**
+     * @var bool
+     */
+    private bool $fake;
+
+    /**
+     * @var array|null
+     */
+    private ?array $fakeData;
+
+    /**
      * CompaniesHouseLaravel constructor.
      */
-    private function __construct()
+    private function __construct(bool $fake = false, ?array $data = null)
     {
+        $this->fake = $fake;
+        $this->fakeData = $data;
         $this->key = config('companies-house-laravel.api.key');
+
+        if ($this->fake) {
+            Http::fake($this->fakeData);
+        }
     }
 
     /**
@@ -28,6 +44,14 @@ class Client
     public static function make(): self
     {
         return new self();
+    }
+
+    /**
+     * @return self
+     */
+    public static function fake(array $data): self
+    {
+        return new self(true, $data);
     }
 
     /**
