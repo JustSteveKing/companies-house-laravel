@@ -29,6 +29,7 @@ class CompaniesHouseTest extends TestCase
                     ],
                 ],
             ], 404, ['Headers']),
+            config('companies-house-laravel.api.url') . '/search/company/Dyson' => Http::response($this->dataSearchCompany(), 200, ['Headers']),
         ]);
 
         $this->api = Client::make();
@@ -43,7 +44,7 @@ class CompaniesHouseTest extends TestCase
         $number = '02627406';
         $company = $this->api->company($number);
 
-        if (! is_null($company->number)) {
+        if (!is_null($company->number)) {
             $this->assertEquals(
                 $number,
                 $company->number
@@ -110,7 +111,7 @@ class CompaniesHouseTest extends TestCase
      */
     public function searching_for_a_company_returns_a_collection_of_company_search_results()
     {
-        $collection = $this->api->searchCompany('Lila Fuches Limited');
+        $collection = $this->api->searchCompany('Lila', 2);
 
         $this->assertInstanceOf(
             CompanyCollection::class,
@@ -136,7 +137,7 @@ class CompaniesHouseTest extends TestCase
     /**
      * @return array
      */
-    private function data()
+    private function data(): array
     {
         return
             [
@@ -210,5 +211,80 @@ class CompaniesHouseTest extends TestCase
                 "registered_office_is_in_dispute" => false,
                 "can_file" => true,
             ];
+    }
+
+    private function dataSearchCompany(): array
+    {
+        return [
+            "page_number" => 1,
+            "items" => [
+                [
+                    "company_status" => "active",
+                    "kind" => "searchresults#company",
+                    "address" => [
+                        "postal_code" => "NW9 0BA",
+                        "locality" => "London",
+                        "address_line_1" => "Coniston Gardens",
+                        "country" => "United Kingdom",
+                        "premises" => "75",
+                    ],
+                    "company_type" => "ltd",
+                    "description" => "00621952 - Incorporated on 27 February 1959",
+                    "links" => [
+                        "self" => "/company/00621952",
+                    ],
+                    "snippet" => "",
+                    "address_snippet" => "75 Coniston Gardens, London, United Kingdom, NW9 0BA",
+                    "date_of_creation" => "1959-02-27",
+                    "title" => "LILA COMPANY LIMITED",
+                    "matches" => [
+                        "title" => [
+                            1,
+                            4,
+                        ],
+                        "snippet" => [],
+                    ],
+                    "company_number" => "00621952",
+                    "description_identifier" =>  [
+                        "incorporated-on",
+                    ],
+                ],
+                [
+                    "kind" => "searchresults#company",
+                        "address" => [
+                        "country" => "England",
+                        "premises" => "49",
+                        "postal_code" => "SL7 1PE",
+                        "address_line_1" => "Dedmere Road",
+                        "locality" => "Marlow",
+                    ],
+                    "company_status" => "active",
+                    "company_type" => "ltd",
+                    "date_of_creation" => "2020-09-09",
+                    "snippet" => "",
+                    "links" => [
+                        "self" => "/company/12869654",
+                    ],
+                    "address_snippet" => "49 Dedmere Road, Marlow, England, SL7 1PE",
+                    "description" => "12869654 - Incorporated on  9 September 2020",
+                    "description_identifier" => [
+                        "incorporated-on",
+                    ],
+                    "company_number" => "12869654",
+                    "matches" => [
+                        "title" => [
+                            1,
+                            4,
+                        ],
+                        "snippet" => [],
+                    ],
+                    "title" => "LILA AND LION LTD",
+                ],
+            ],
+            "total_results" => 447,
+            "items_per_page" => 2,
+            "start_index" => 0,
+            "kind" => "search#companies",
+        ];
     }
 }
