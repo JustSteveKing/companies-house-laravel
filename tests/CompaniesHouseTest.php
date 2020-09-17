@@ -124,6 +124,16 @@ class CompaniesHouseTest extends TestCase
     }
 
     /**
+     * @test
+     */
+    public function searching_for_a_company_by_something_other_than_name_returns_an_empty_collection()
+    {
+        $collection = $this->api->searchCompany('1234567890');
+
+        $this->assertEmpty($collection);
+    }
+
+    /**
      * @return array
      */
     private function data()

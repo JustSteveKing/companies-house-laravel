@@ -49,7 +49,7 @@ class Client
         return null;
     }
 
-    public function searchCompany(string $query, ?int $perPage = null, ?int $startIndex = null):? CompanyCollection
+    public function searchCompany(string $query, ?int $perPage = null, ?int $startIndex = null): CompanyCollection
     {
         $response = Http::withBasicAuth(
             $this->key,
@@ -63,18 +63,14 @@ class Client
             ]
         );
 
-        if ($response->ok()) {
-            $collection = new CompanyCollection();
-            foreach ($response->json('items') as $item) {
+        $collection = new CompanyCollection();
+        foreach ($response->json('items') as $item) {
 
-                $collection->add(
-                    SearchResult::fromApi($item)
-                );
-            }
-
-            return $collection;
+            $collection->add(
+                SearchResult::fromApi($item)
+            );
         }
 
-        return null;
+        return $collection;
     }
 }
