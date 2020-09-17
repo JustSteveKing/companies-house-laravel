@@ -62,7 +62,7 @@ $this->validate($request, [
 ]);
 ```
 
-Searching for a company by name:
+Searching for a company by name, please note this will return an empty collection if there are no results:
 
 ```php
 use JustSteveKing\CompaniesHouseLaravel\Client;
@@ -79,6 +79,26 @@ $results->each(function ($result) {
 ```
 
 ## Testing
+
+### Using this library in your own tests
+
+There is a relatively simple testing utility on this library, that allows you to fake the underlying Http client:
+
+```php
+use Illuminate\Support\Facades\Http
+use JustSteveKing\CompaniesHouseLaravel\Client;
+
+$fakedApi = Client::fake([
+    'https://api.companieshouse.gov.uk/*',
+    Http::response([], 200, [])
+]);
+```
+
+To understand how to use this part please follow the Laravel documentation for [Testing the Http Client](https://laravel.com/docs/8.x/http-client#testing)
+
+
+
+Run the unit tests:
 
 ``` bash
 composer test
