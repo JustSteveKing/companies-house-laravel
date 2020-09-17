@@ -5,6 +5,8 @@ namespace JustSteveKing\CompaniesHouseLaravel\Tests;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rule;
 use JustSteveKing\CompaniesHouseLaravel\Client;
+use JustSteveKing\CompaniesHouseLaravel\Collections\CompanyCollection;
+use JustSteveKing\CompaniesHouseLaravel\Data\Company\SearchResult;
 use JustSteveKing\CompaniesHouseLaravel\Rules\CompanyNumber;
 
 class CompaniesHouseTest extends TestCase
@@ -103,6 +105,27 @@ class CompaniesHouseTest extends TestCase
         $this->assertTrue(Rule::companyNumber()->passes('test', $number));
     }
 
+    /**
+     * @test
+     */
+    public function searching_for_a_company_returns_a_collection_of_company_search_results()
+    {
+        $collection = $this->api->searchCompany('Lila Fuches Limited');
+
+        $this->assertInstanceOf(
+            CompanyCollection::class,
+            $collection
+        );
+
+        $this->assertInstanceOf(
+            SearchResult::class,
+            $collection->first()
+        );
+    }
+
+    /**
+     * @return array
+     */
     private function data()
     {
         return
