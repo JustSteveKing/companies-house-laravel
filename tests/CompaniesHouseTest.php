@@ -29,8 +29,8 @@ class CompaniesHouseTest extends TestCase
                     ],
                 ],
             ], 404, ['Headers']),
-            config('companies-house-laravel.api.url') . '/search/company/Dyson' => Http::response($this->dataSearchCompany(), 200, ['Headers']),
-            config('companies-house-laravel.api.url') . '/search/company/1234567890' => Http::response([
+            config('companies-house-laravel.api.url') . '/search/companies/Dyson' => Http::response($this->dataSearchCompany(), 200, ['Headers']),
+            config('companies-house-laravel.api.url') . '/search/companies/1234567890' => Http::response([
                 'items' => [],
             ], 200, ['Headers']),
         ]);
