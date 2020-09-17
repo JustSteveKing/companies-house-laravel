@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rule;
 use JustSteveKing\CompaniesHouseLaravel\Client;
 use JustSteveKing\CompaniesHouseLaravel\Collections\CompanyCollection;
-use JustSteveKing\CompaniesHouseLaravel\Data\Company\SearchResult;
 use JustSteveKing\CompaniesHouseLaravel\Rules\CompanyNumber;
 
 class CompaniesHouseTest extends TestCase
