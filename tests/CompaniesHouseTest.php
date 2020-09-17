@@ -114,7 +114,7 @@ class CompaniesHouseTest extends TestCase
      */
     public function searching_for_a_company_returns_a_collection_of_company_search_results()
     {
-        $collection = $this->api->searchCompany('Lila', 2);
+        $collection = $this->api->searchCompany('Lila');
 
         $this->assertInstanceOf(
             CompanyCollection::class,

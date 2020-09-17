@@ -64,6 +64,11 @@ class Client
         );
 
         $collection = new CompanyCollection();
+
+        if (empty($response->json('items'))) {
+            return $collection;
+        }
+
         foreach ($response->json('items') as $item) {
             $collection->add(
                 SearchResult::fromApi($item)
