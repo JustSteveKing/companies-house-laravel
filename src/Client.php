@@ -93,10 +93,14 @@ class Client
             return $collection;
         }
 
-        foreach ($response->json('items') as $item) {
-            $collection->add(
-                SearchResult::fromApi($item)
-            );
+        $items = $response->json('items');
+
+        if (is_array($items)) {
+            foreach ($items as $item) {
+                $collection->add(
+                    SearchResult::fromApi($item)
+                );
+            }
         }
 
         return $collection;
