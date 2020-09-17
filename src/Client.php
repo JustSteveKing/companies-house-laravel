@@ -59,13 +59,12 @@ class Client
             [
                 'q' => $query,
                 'items_per_page' => $perPage,
-                'start_index' => $startIndex
+                'start_index' => $startIndex,
             ]
         );
 
         $collection = new CompanyCollection();
         foreach ($response->json('items') as $item) {
-
             $collection->add(
                 SearchResult::fromApi($item)
             );

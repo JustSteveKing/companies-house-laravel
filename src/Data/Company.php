@@ -3,7 +3,6 @@
 namespace JustSteveKing\CompaniesHouseLaravel\Data;
 
 use Carbon\Carbon;
-use JustSteveKing\CompaniesHouseLaravel\Collections\CompanyCollection;
 
 class Company
 {
