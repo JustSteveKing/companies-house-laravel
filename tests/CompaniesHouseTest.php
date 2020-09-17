@@ -31,7 +31,7 @@ class CompaniesHouseTest extends TestCase
             ], 404, ['Headers']),
             config('companies-house-laravel.api.url') . '/search/company/Dyson' => Http::response($this->dataSearchCompany(), 200, ['Headers']),
             config('companies-house-laravel.api.url') . '/search/company/1234567890' => Http::response([
-                'items' => []
+                'items' => [],
             ], 200, ['Headers']),
         ]);
 
@@ -47,7 +47,7 @@ class CompaniesHouseTest extends TestCase
         $number = '02627406';
         $company = $this->api->company($number);
 
-        if (!is_null($company->number)) {
+        if (! is_null($company->number)) {
             $this->assertEquals(
                 $number,
                 $company->number
@@ -248,7 +248,7 @@ class CompaniesHouseTest extends TestCase
                         "snippet" => [],
                     ],
                     "company_number" => "00621952",
-                    "description_identifier" =>  [
+                    "description_identifier" => [
                         "incorporated-on",
                     ],
                 ],
