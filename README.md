@@ -62,6 +62,22 @@ $this->validate($request, [
 ]);
 ```
 
+Searching for a company by name:
+
+```php
+use JustSteveKing\CompaniesHouseLaravel\Client;
+
+$api = Client::make();
+
+// Get a collection of Company\SearchResult inside of a CompanyCollection
+$results = $api->searchCompany('Name you want to search');
+
+// You now have access to all standard Laravel collection methods
+$results->each(function ($result) {
+    // Do something with the result here.
+});
+```
+
 ## Testing
 
 ``` bash
