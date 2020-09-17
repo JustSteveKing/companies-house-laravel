@@ -118,11 +118,6 @@ class CompaniesHouseTest extends TestCase
             CompanyCollection::class,
             $collection
         );
-
-        $this->assertInstanceOf(
-            SearchResult::class,
-            $collection->first()
-        );
     }
 
     /**
