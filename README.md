@@ -12,6 +12,9 @@
 
 
 A Laravel wrapper to get companies house information and validate company numbers. This is a work in progress and more methods will be added to the API as they are required. Currently only Company Number is able to be passed to the API.
+
+This has been tested thoroughly in Laravel 8, Laravel 7 is supported but if you find issues please do drop a detailed issue.
+
 ## Installation
 
 You can install the package via composer:
@@ -40,7 +43,7 @@ return [
 
 Using it inline:
 
-``` php
+```php
 use JustSteveKing\CompaniesHouseLaravel\Client;
 
 // Make a new client
@@ -77,6 +80,23 @@ $results->each(function ($result) {
     // Do something with the result here.
 });
 ```
+
+Fetching a Collection of Company Officers will return an OfficerCollection:
+
+```php
+use JustSteveKing\CompaniesHouseLaravel\Client;
+
+$api = Client::make();
+
+// Get a collection of Company\SearchResult inside of a CompanyCollection
+$results = $api->getOfficers('company-number');
+
+// You now have access to all standard Laravel collection methods
+$results->each(function ($result) {
+    // Do something with the result here.
+});
+```
+
 
 ## Testing
 
