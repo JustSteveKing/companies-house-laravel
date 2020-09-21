@@ -26,6 +26,10 @@ class Statement
      */
     public ?bool $overdue;
 
+    /**
+     * Statement constructor.
+     * @param array $data
+     */
     private function __construct(array $data)
     {
         $this->nextDue = Carbon::parse($data['confirmation_statement']['next_due'] ?? null);
@@ -34,6 +38,10 @@ class Statement
         $this->overdue = $data['confirmation_statement']['overdue'] ?? null;
     }
 
+    /**
+     * @param array $data
+     * @return static
+     */
     public static function make(array $data): self
     {
         return new self($data);

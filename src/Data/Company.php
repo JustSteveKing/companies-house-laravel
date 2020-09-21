@@ -76,6 +76,10 @@ class Company
      */
     public ?bool $canFile;
 
+    /**
+     * Company constructor.
+     * @param array $data
+     */
     private function __construct(array $data)
     {
         $this->name = $data['company_name'];
@@ -94,6 +98,10 @@ class Company
         $this->canFile = $data['can_file'];
     }
 
+    /**
+     * @param array $data
+     * @return static
+     */
     public static function fromApi(array $data): self
     {
         return new self($data);

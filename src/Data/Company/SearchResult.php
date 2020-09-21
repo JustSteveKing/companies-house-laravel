@@ -7,14 +7,29 @@ use JustSteveKing\CompaniesHouseLaravel\Data\Address;
 
 class SearchResult
 {
+    /**
+     * @var mixed|string|null
+     */
     public ?string $status;
 
+    /**
+     * @var mixed|string|null
+     */
     public ?string $title;
 
+    /**
+     * @var mixed|string|null
+     */
     public ?string $number;
 
+    /**
+     * @var Address
+     */
     public Address $address;
 
+    /**
+     * @var Carbon|null
+     */
     public ?Carbon $created;
 
     /**
@@ -23,7 +38,7 @@ class SearchResult
      */
     private function __construct(array $data)
     {
-        $this->status = $data['company_status'];
+        $this->status = $data['company_status'] ?? null;
         $this->title = $data['title'];
         $this->number = $data['company_number'];
         $this->address = Address::make($data['address']);

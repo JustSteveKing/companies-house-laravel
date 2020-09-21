@@ -26,6 +26,10 @@ class NextAccount
      */
     public ?Carbon $periodStartOn;
 
+    /**
+     * NextAccount constructor.
+     * @param array $data
+     */
     private function __construct(array $data)
     {
         $this->dueOn = Carbon::parse($data['accounts']['next_accounts']['due_on'] ?? null);
@@ -34,6 +38,10 @@ class NextAccount
         $this->periodStartOn = Carbon::parse($data['accounts']['next_accounts']['period_start_on'] ?? null);
     }
 
+    /**
+     * @param array $data
+     * @return static
+     */
     public static function make(array $data): self
     {
         return new self($data);
