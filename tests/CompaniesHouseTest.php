@@ -154,7 +154,10 @@ class CompaniesHouseTest extends TestCase
     {
         $collection = $this->api->searchCompany('obviously_fake');
 
-        $this->assertEmpty($collection);
+        $this->assertEquals(
+            0,
+            $collection->count()
+        );
     }
 
     /**
