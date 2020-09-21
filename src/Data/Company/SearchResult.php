@@ -39,9 +39,9 @@ class SearchResult
     private function __construct(array $data)
     {
         $this->status = $data['company_status'] ?? null;
-        $this->title = $data['title'];
-        $this->number = $data['company_number'];
-        $this->address = Address::make($data['address']);
+        $this->title = $data['title'] ?? null;
+        $this->number = $data['company_number'] ?? null;
+        $this->address = Address::make($data['address'] ?? null);
         $this->created = Carbon::parse($data['date_of_creation'] ?? null);
     }
 

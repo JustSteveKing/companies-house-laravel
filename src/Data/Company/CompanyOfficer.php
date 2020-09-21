@@ -42,8 +42,8 @@ class CompanyOfficer
      */
     private function __construct(array $data)
     {
-        $this->name = $data['name'];
-        $this->role = $data['officer_role'];
+        $this->name = $data['name'] ?? null;
+        $this->role = $data['officer_role'] ?? null;
         $this->occupation = $data['occupation'] ?? null;
         $this->countryOfResidency = $data['country_of_residence'] ?? null;
         $this->nationality = $data['nationality'] ?? null;
