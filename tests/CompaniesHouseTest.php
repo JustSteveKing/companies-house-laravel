@@ -49,7 +49,7 @@ class CompaniesHouseTest extends TestCase
             // Company officers
             config('companies-house-laravel.api.url') . '/company/02627406/officers' => Http::response($this->dataCompanyOfficers(), 200, ['Headers']),
             config('companies-house-laravel.api.url') . '/company/obviously_fake/officers' => Http::response([
-                'items' => []
+                'items' => [],
             ], 200, ['Headers']),
             config('companies-house-laravel.api.url') . '/company/404-from-test-case/officers' => Http::response([
                 'errors' => [
