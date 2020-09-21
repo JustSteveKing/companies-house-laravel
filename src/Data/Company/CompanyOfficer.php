@@ -7,27 +7,27 @@ use JustSteveKing\CompaniesHouseLaravel\Data\Address;
 class CompanyOfficer
 {
     /**
-     * @var mixed|string
+     * @var string|null
      */
-    public string $name;
+    public ?string $name;
 
     /**
-     * @var mixed|string
+     * @var string|null
      */
-    public string $role;
+    public ?string $role;
 
     /**
-     * @var mixed|string|null
+     * @var string|null
      */
     public ?string $occupation;
 
     /**
-     * @var mixed|string|null
+     * @var string|null
      */
     public ?string $countryOfResidency;
 
     /**
-     * @var mixed|string|null
+     * @var string|null
      */
     public ?string $nationality;
 

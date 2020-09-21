@@ -8,22 +8,22 @@ use JustSteveKing\CompaniesHouseLaravel\Data\Address;
 class SearchResult
 {
     /**
-     * @var mixed|string|null
+     * @var string|null
      */
     public ?string $status;
 
     /**
-     * @var mixed|string|null
+     * @var string|null
      */
     public ?string $title;
 
     /**
-     * @var mixed|string|null
+     * @var string|null
      */
     public ?string $number;
 
     /**
-     * @var Address
+     * @var Address|null
      */
     public ?Address $address;
 
