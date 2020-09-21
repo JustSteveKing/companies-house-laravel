@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rule;
 use JustSteveKing\CompaniesHouseLaravel\Client;
 use JustSteveKing\CompaniesHouseLaravel\Collections\CompanyCollection;
+use JustSteveKing\CompaniesHouseLaravel\Collections\OfficerCollection;
 use JustSteveKing\CompaniesHouseLaravel\Rules\CompanyNumber;
 
 class CompaniesHouseTest extends TestCase
@@ -19,6 +20,8 @@ class CompaniesHouseTest extends TestCase
         parent::setUp();
 
         $this->api = Client::fake([
+
+            // Company Profiles
             config('companies-house-laravel.api.url') . '/company/02627406' => Http::response($this->data(), 200, ['Headers']),
             config('companies-house-laravel.api.url') . '/company/obviously_fake' => Http::response([
                 'errors' => [
@@ -28,11 +31,36 @@ class CompaniesHouseTest extends TestCase
                     ],
                 ],
             ], 404, ['Headers']),
-            config('companies-house-laravel.api.url') . '/search/companies/Dyson' => Http::response($this->dataSearchCompany(), 200, ['Headers']),
-            config('companies-house-laravel.api.url') . '/search/companies/1234567890' => Http::response([
+
+            // Search For a company by name
+            config('companies-house-laravel.api.url') . '/search/companies?q=Dyson' => Http::response($this->dataSearchCompany(), 200, ['Headers']),
+            config('companies-house-laravel.api.url') . '/search/companies?q=obviously_fake' => Http::response([
                 'items' => [],
             ], 200, ['Headers']),
+            config('companies-house-laravel.api.url') . '/search/companies?q=404-from-test-case' => Http::response([
+                'errors' => [
+                    [
+                        'type' => 'ch:service',
+                        'error' => 'company-profile-not-found',
+                    ],
+                ],
+            ], 404, ['Headers']),
+
+            // Company officers
+            config('companies-house-laravel.api.url') . '/company/02627406/officers' => Http::response($this->dataCompanyOfficers(), 200, ['Headers']),
+            config('companies-house-laravel.api.url') . '/company/obviously_fake/officers' => Http::response([
+                'items' => []
+            ], 200, ['Headers']),
+            config('companies-house-laravel.api.url') . '/company/404-from-test-case/officers' => Http::response([
+                'errors' => [
+                    [
+                        'type' => 'ch:service',
+                        'error' => 'company-profile-not-found',
+                    ],
+                ],
+            ], 404, ['Headers']),
         ]);
+
         $this->rule = new CompanyNumber($this->api);
     }
 
@@ -111,7 +139,7 @@ class CompaniesHouseTest extends TestCase
      */
     public function searching_for_a_company_returns_a_collection_of_company_search_results()
     {
-        $collection = $this->api->searchCompany('Lila');
+        $collection = $this->api->searchCompany('Dyson');
 
         $this->assertInstanceOf(
             CompanyCollection::class,
@@ -124,9 +152,60 @@ class CompaniesHouseTest extends TestCase
      */
     public function searching_for_a_company_by_something_other_than_name_returns_an_empty_collection()
     {
-        $collection = $this->api->searchCompany('1234567890');
+        $collection = $this->api->searchCompany('obviously_fake');
 
         $this->assertEmpty($collection);
+    }
+
+    /**
+     * @test
+     */
+    public function searching_for_a_company_that_does_not_exist_will_fail_an_return_null()
+    {
+        $collection = $this->api->searchCompany('404-from-test-case');
+
+        $this->assertNull($collection);
+    }
+
+    /**
+     * @test
+     */
+    public function retrieve_a_collection_of_company_officers()
+    {
+        $collection = $this->api->getOfficers('02627406');
+
+        $this->assertInstanceOf(
+            OfficerCollection::class,
+            $collection
+        );
+
+        $this->assertEquals(
+            "SURNAME, Some Name",
+            $collection->first()->name
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function retrieve_an_empty_collection_of_company_officers_when_no_officers_registered()
+    {
+        $collection = $this->api->getOfficers('obviously_fake');
+
+        $this->assertInstanceOf(
+            OfficerCollection::class,
+            $collection
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function when_trying_to_get_officers_from_a_company_that_does_not_exist_null_is_returned()
+    {
+        $collection = $this->api->getOfficers('404-from-test-case');
+
+        $this->assertNull($collection);
     }
 
     /**
@@ -208,6 +287,9 @@ class CompaniesHouseTest extends TestCase
             ];
     }
 
+    /**
+     * @return array
+     */
     private function dataSearchCompany(): array
     {
         return [
@@ -280,6 +362,73 @@ class CompaniesHouseTest extends TestCase
             "items_per_page" => 2,
             "start_index" => 0,
             "kind" => "search#companies",
+        ];
+    }
+
+    private function dataCompanyOfficers(): array
+    {
+        return [
+            "kind" => "officer-list",
+            "total_results" => 2,
+            "items" => [
+                [
+                    "date_of_birth" => [
+                        "month" => 4,
+                        "year" => 1978,
+                    ],
+                    "officer_role" => "director",
+                    "address" => [
+                        "postal_code" => "SN16 0RP",
+                        "address_line_2" => "Malmesbury",
+                        "country" => "England",
+                        "address_line_1" => "Tetbury Hill",
+                        "locality" => "Wiltshire",
+                    ],
+                    "name" => "SURNAME, Some Name",
+                    "nationality" => "British",
+                    "appointed_on" => "2014-08-23",
+                    "occupation" => "Operations Director",
+                    "country_of_residence" => "United Kingdom",
+                    "links" => [
+                        "officer" => [
+                            "appointments" => "/officers/234234234234234234/appointments",
+                        ],
+                    ],
+                ],
+                [
+                    "nationality" => "British",
+                    "name" => "SURNAME, Some Name Again",
+                    "officer_role" => "director",
+                    "address" => [
+                        "postal_code" => "SN16 0RP",
+                        "address_line_2" => "Malmesbury",
+                        "country" => "England",
+                        "address_line_1" => "Tetbury Hill",
+                        "locality" => "Wiltshire",
+                    ],
+                    "date_of_birth" => [
+                        "year" => 1978,
+                        "month" => 12,
+                    ],
+                    "links" => [
+                        "officer" => [
+                            "appointments" => "/officers/123123123123123/appointments",
+                        ],
+                    ],
+                    "occupation" => "Managing Director",
+                    "appointed_on" => "2014-08-23",
+                    "country_of_residence" => "United Kingdom",
+                ],
+            ],
+            "start_index" => 0,
+            "active_count" => 2,
+            "resigned_count" => 0,
+            "links" => [
+                "inactive_count" => 0,
+                "self" => "/company/12171927/officers",
+            ],
+            "items_per_page" => 35,
+            "etag" => "dfgdfgdfgdfgdfg",
         ];
     }
 }

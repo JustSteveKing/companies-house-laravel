@@ -4,7 +4,9 @@ namespace JustSteveKing\CompaniesHouseLaravel;
 
 use Illuminate\Support\Facades\Http;
 use JustSteveKing\CompaniesHouseLaravel\Collections\CompanyCollection;
+use JustSteveKing\CompaniesHouseLaravel\Collections\OfficerCollection;
 use JustSteveKing\CompaniesHouseLaravel\Data\Company;
+use JustSteveKing\CompaniesHouseLaravel\Data\Company\CompanyOfficer;
 use JustSteveKing\CompaniesHouseLaravel\Data\Company\SearchResult;
 
 class Client
@@ -73,7 +75,13 @@ class Client
         return null;
     }
 
-    public function searchCompany(string $query, ?int $perPage = null, ?int $startIndex = null): CompanyCollection
+    /**
+     * @param string $query
+     * @param int|null $perPage
+     * @param int|null $startIndex
+     * @return CompanyCollection|null
+     */
+    public function searchCompany(string $query, ?int $perPage = null, ?int $startIndex = null):? CompanyCollection
     {
         $response = Http::withBasicAuth(
             $this->key,
@@ -87,6 +95,10 @@ class Client
             ]
         );
 
+        if (! $response->ok()) {
+            return null;
+        }
+
         $collection = new CompanyCollection();
 
         if (empty($response->json('items'))) {
@@ -97,6 +109,42 @@ class Client
             if (is_array($item)) {
                 $collection->add(
                     SearchResult::fromApi($item)
+                );
+            }
+        }
+
+        return $collection;
+    }
+
+    /**
+     * @param string $number
+     * @param int|null $perPage
+     * @param int|null $startIndex
+     * @return OfficerCollection|null
+     */
+    public function getOfficers(string $number, ?int $perPage = null, ?int $startIndex = null):? OfficerCollection
+    {
+        $response = Http::withBasicAuth(
+            $this->key,
+            ''
+        ) ->get(
+            config('companies-house-laravel.api.url') . '/company/' . $number . '/officers',
+            [
+                'items_per_page' => $perPage,
+                'start_index' => $startIndex,
+            ]
+        );
+
+        if (! $response->ok()) {
+            return null;
+        }
+
+        $collection = new OfficerCollection();
+
+        foreach ($response->json('items') as $item) {
+            if (is_array($item)) {
+                $collection->add(
+                    CompanyOfficer::fromApi($item)
                 );
             }
         }

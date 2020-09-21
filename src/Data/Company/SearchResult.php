@@ -26,7 +26,7 @@ class SearchResult
         $this->status = $data['company_status'];
         $this->title = $data['title'];
         $this->number = $data['company_number'];
-        $this->address = Address::make($data);
+        $this->address = Address::make($data['address']);
         $this->created = Carbon::parse($data['date_of_creation'] ?? null);
     }
 
