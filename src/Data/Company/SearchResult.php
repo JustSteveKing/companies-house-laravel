@@ -25,7 +25,7 @@ class SearchResult
     /**
      * @var Address
      */
-    public Address $address;
+    public ?Address $address;
 
     /**
      * @var Carbon|null

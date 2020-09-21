@@ -36,9 +36,9 @@ class Address
 
     /**
      * Address constructor.
-     * @param array $data
+     * @param array|null $data
      */
-    private function __construct(array $data)
+    private function __construct(?array $data)
     {
         $this->postalCode = $data['postal_code'] ?? null;
         $this->locality = $data['locality'] ?? null;
@@ -49,10 +49,10 @@ class Address
     }
 
     /**
-     * @param array $data
-     * @return self
+     * @param array|null $data
+     * @return static
      */
-    public static function make(array $data): self
+    public static function make(?array $data): self
     {
         return new self($data);
     }
