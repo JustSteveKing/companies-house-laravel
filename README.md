@@ -4,20 +4,20 @@
 
 </p>
 
-# A Laravel wrapper to get companies house information and validate company numbers
+# A Laravel wrapper to get Companies House information and validate company numbers
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/juststeveking/companies-house-laravel.svg?style=flat-square)](https://packagist.org/packages/juststeveking/companies-house-laravel)
 ![Tests](https://github.com/juststeveking/companies-house-laravel/workflows/Tests/badge.svg?branch=master)
 [![Total Downloads](https://img.shields.io/packagist/dt/juststeveking/companies-house-laravel.svg?style=flat-square)](https://packagist.org/packages/juststeveking/companies-house-laravel)
 
 
-A Laravel wrapper to get companies house information and validate company numbers. This is a work in progress and more methods will be added to the API as they are required.
+A Laravel wrapper to get Companies House information and validate company numbers. This is a work in progress and more methods will be added to the API as they are required.
 
-This has been tested thoroughly in Laravel 8, Laravel 7 is supported but if you find issues please do drop a detailed issue.
+This has been tested thoroughly in Laravel 8. Laravel 7 is supported, but if you find issues please do drop a detailed issue.
 
 ## Installation
 
-You can install the package via composer:
+You can install the package via Composer:
 
 ```bash
 composer require juststeveking/companies-house-laravel
@@ -65,7 +65,7 @@ $this->validate($request, [
 ]);
 ```
 
-Searching for a company by name, please note this will return an empty collection if there are no results:
+Searching for a company by name. Please note: this will return an empty collection if there are no results:
 
 ```php
 use JustSteveKing\CompaniesHouseLaravel\Client;
@@ -81,7 +81,7 @@ $results->each(function ($result) {
 });
 ```
 
-Fetching a Collection of Company Officers will return an OfficerCollection:
+Fetching a collection of company officers will return an `OfficerCollection`:
 
 ```php
 use JustSteveKing\CompaniesHouseLaravel\Client;
@@ -102,7 +102,7 @@ $results->each(function ($result) {
 
 ### Using this library in your own tests
 
-There is a relatively simple testing utility on this library, that allows you to fake the underlying Http client:
+There is a relatively simple testing utility on this library that allows you to fake the underlying HTTP client:
 
 ```php
 use Illuminate\Support\Facades\Http
@@ -114,7 +114,7 @@ $fakedApi = Client::fake([
 ]);
 ```
 
-To understand how to use this part please follow the Laravel documentation for [Testing the Http Client](https://laravel.com/docs/8.x/http-client#testing)
+To understand how to use this part, please follow the Laravel documentation for [Testing the Http Client](https://laravel.com/docs/8.x/http-client#testing)
 
 
 
