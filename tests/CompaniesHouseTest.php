@@ -153,7 +153,8 @@ class CompaniesHouseTest extends TestCase
     public function searching_for_a_company_by_something_other_than_name_returns_an_empty_collection()
     {
         $collection = $this->api->searchCompany('obviously_fake');
-        $this->assertEmpty(
+        $this->assertEquals(
+            [],
             $collection->all()
         );
     }
