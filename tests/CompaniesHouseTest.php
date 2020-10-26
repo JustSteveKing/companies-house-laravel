@@ -2,12 +2,13 @@
 
 namespace JustSteveKing\CompaniesHouseLaravel\Tests;
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Http;
 use JustSteveKing\CompaniesHouseLaravel\Client;
+use JustSteveKing\CompaniesHouseLaravel\Rules\CompanyNumber;
+use JustSteveKing\CompaniesHouseLaravel\Data\Company\SearchResult;
 use JustSteveKing\CompaniesHouseLaravel\Collections\CompanyCollection;
 use JustSteveKing\CompaniesHouseLaravel\Collections\OfficerCollection;
-use JustSteveKing\CompaniesHouseLaravel\Rules\CompanyNumber;
 
 class CompaniesHouseTest extends TestCase
 {
@@ -144,18 +145,6 @@ class CompaniesHouseTest extends TestCase
         $this->assertInstanceOf(
             CompanyCollection::class,
             $collection
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function searching_for_a_company_by_something_other_than_name_returns_an_empty_collection()
-    {
-        $collection = $this->api->searchCompany('obviously_fake');
-        $this->assertEquals(
-            [],
-            $collection->all()
         );
     }
 
