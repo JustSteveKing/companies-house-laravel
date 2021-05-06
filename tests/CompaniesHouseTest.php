@@ -36,7 +36,7 @@ class CompaniesHouseTest extends TestCase
         $this->client->fake();
 
         $response = $this->client->search(
-            query: 'test',
+            query: 'Lila Fuches Limited',
         );
 
         $this->assertEquals(

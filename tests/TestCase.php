@@ -12,6 +12,29 @@ class TestCase extends Orchestra
     public function setUp(): void
     {
         parent::setUp();
+
+        $env = parse_ini_file(__DIR__ . '/../.env');
+
+        $this->app['config']->set(
+            'companies-house.api.key',
+            $env['COMPANIES_HOUSE_KEY'],
+        );
+        $this->app['config']->set(
+            'companies-house.api.url',
+            $env['COMPANIES_HOUSE_URL'],
+        );
+        $this->app['config']->set(
+            'companies-house.api.timeout',
+            $env['COMPANIES_HOUSE_TIMEOUT'],
+        );
+        $this->app['config']->set(
+            'companies-house.api.retry.times',
+            $env['COMPANIES_HOUSE_RETRY_TIMES'],
+        );
+        $this->app['config']->set(
+            'companies-house.api.retry.milliseconds',
+            $env['COMPANIES_HOUSE_RETRY_MILLISECONDS'],
+        );
     }
 
     protected function getPackageProviders($app)
@@ -19,31 +42,5 @@ class TestCase extends Orchestra
         return [
             CompaniesHouseServiceProvider::class,
         ];
-    }
-
-    public function getEnvironmentSetUp($app)
-    {
-        $env = parse_ini_file(__DIR__ . '/../.env.ci');
-
-        $app['config']->set(
-            'companies-house.companies-house.api.key',
-            $env['COMPANIES_HOUSE_KEY'],
-        );
-        $app['config']->set(
-            'companies-house.companies-house.api.url',
-            $env['COMPANIES_HOUSE_URL'],
-        );
-        $app['config']->set(
-            'companies-house.companies-house.api.timeout',
-            $env['COMPANIES_HOUSE_TIMEOUT'],
-        );
-        $app['config']->set(
-            'companies-house.companies-house.api.retry.times',
-            $env['COMPANIES_HOUSE_RETRY_TIMES'],
-        );
-        $app['config']->set(
-            'companies-house.companies-house.api.retry.milliseconds',
-            $env['COMPANIES_HOUSE_RETRY_MILLISECONDS'],
-        );
     }
 }

@@ -19,9 +19,9 @@ class Client
     public function __construct(
         protected string $url,
         protected string $apiKey,
-        protected int $timeout = 10,
-        protected null|int $retryTimes = null,
-        protected null|int $retryMilliseconds = null,
+        protected int|string $timeout = 10,
+        protected null|string|int $retryTimes = null,
+        protected null|string|int $retryMilliseconds = null,
     ) {}
 
     /**
@@ -51,7 +51,7 @@ class Client
         )->withHeaders([
             'Accept' => 'application/json'
         ])->timeout(
-            seconds: $this->timeout,
+            seconds: (int) $this->timeout,
         );
 
         if (
@@ -59,8 +59,8 @@ class Client
             && ! is_null($this->retryMilliseconds)
         ) {
             $request->retry(
-                times: $this->retryTimes,
-                sleep: $this->retryMilliseconds,
+                times: (int) $this->retryTimes,
+                sleep: (int) $this->retryMilliseconds,
             );
         }
 
