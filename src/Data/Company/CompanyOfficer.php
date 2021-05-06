@@ -42,11 +42,11 @@ class CompanyOfficer
      */
     private function __construct(array $data)
     {
-        $this->name = $data['name'] ?? null;
-        $this->role = $data['officer_role'] ?? null;
-        $this->occupation = $data['occupation'] ?? null;
-        $this->countryOfResidency = $data['country_of_residence'] ?? null;
-        $this->nationality = $data['nationality'] ?? null;
+        $this->name = isset($data['name']) ? $data['name'] : null;
+        $this->role = isset($data['officer_role']) ? $data['officer_role'] : null;
+        $this->occupation = isset($data['occupation']) ? $data['occupation'] : null;
+        $this->countryOfResidency = isset($data['country_of_residence']) ? $data['country_of_residence'] : null;
+        $this->nationality = isset($data['nationality']) ? $data['nationality'] : null;
         $this->address = Address::make($data['address']);
     }
 

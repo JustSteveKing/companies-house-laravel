@@ -40,11 +40,11 @@ class Address
      */
     private function __construct(?array $data)
     {
-        $this->postalCode = $data['postal_code'] ?? null;
-        $this->locality = $data['locality'] ?? null;
-        $this->country = $data['country'] ?? null;
-        $this->line1 = $data['address_line_1'] ?? null;
-        $this->line2 = $data['address_line_2'] ?? null;
+        $this->postalCode = isset($data['postal_code']) ? $data['postal_code'] : null;
+        $this->locality = isset($data['locality']) ? $data['locality'] : null;
+        $this->country = isset($data['country']) ? $data['country'] : null;
+        $this->line1 = isset($data['address_line_1']) ? $data['address_line_1'] : null;
+        $this->line2 = isset($data['address_line_2']) ? $data['address_line_2'] : null;
         $this->full = $this->makeAddress();
     }
 
