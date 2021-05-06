@@ -47,7 +47,7 @@ class CompanyOfficer
         $this->occupation = isset($data['occupation']) ? $data['occupation'] : null;
         $this->countryOfResidency = isset($data['country_of_residence']) ? $data['country_of_residence'] : null;
         $this->nationality = isset($data['nationality']) ? $data['nationality'] : null;
-        $this->address = Address::make($data['address']);
+        $this->address = isset($data['address']) ? Address::make($data['address']) : null;
     }
 
     /**
