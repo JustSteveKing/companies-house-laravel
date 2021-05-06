@@ -22,9 +22,9 @@ class Company
     public Address $address;
 
     /**
-     * @var Account
+     * @var Account|null
      */
-    public Account $accounts;
+    public ?Account $accounts;
 
     /**
      * @var bool|null
@@ -62,9 +62,9 @@ class Company
     public ?string $type;
 
     /**
-     * @var Statement
+     * @var Statement|null
      */
-    public Statement $confirmationStatement;
+    public ?Statement $confirmationStatement;
 
     /**
      * @var bool|null
@@ -82,20 +82,22 @@ class Company
      */
     private function __construct(array $data)
     {
-        $this->name = $data['company_name'];
-        $this->etag = $data['etag'];
+        $this->name = isset($data['company_name']) ? $data['company_name'] : null;
+        $this->etag = isset($data['etag']) ? $data['etag'] : null;
         $this->address = Address::make($data);
         $this->accounts = Account::make($data);
-        $this->insolvent = $data['has_insolvency_history'];
-        $this->jurisdiction = $data['jurisdiction'];
-        $this->status = $data['company_status'];
-        $this->created = Carbon::parse($data['date_of_creation'] ?? null);
-        $this->sicCodes = $data['sic_codes'];
-        $this->number = $data['company_number'];
-        $this->type = $data['type'];
+        $this->insolvent = isset($data['has_insolvency_history']) ? $data['has_insolvency_history'] : null;
+        $this->jurisdiction = isset($data['jurisdiction']) ? $data['jurisdiction'] : null;
+        $this->status = isset($data['company_status']) ? $data['company_status'] : null;
+        $this->created = isset($data['date_of_creation'])
+            ? Carbon::parse($data['date_of_creation'])
+            : null;
+        $this->sicCodes = isset($data['sic_codes']) ? $data['sic_codes'] : null;
+        $this->number = isset($data['company_number']) ? $data['company_number'] : null;
+        $this->type = isset($data['type']) ? $data['type'] : null;
         $this->confirmationStatement = Statement::make($data);
-        $this->hasCharges = $data['has_charges'];
-        $this->canFile = $data['can_file'];
+        $this->hasCharges = isset($data['has_charges']) ? $data['has_charges'] ; null;
+        $this->canFile = isset($data['can_file']) ? $data['can_file'] : null;
     }
 
     /**
