@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JustSteveKing\CompaniesHouseLaravel;
+namespace JustSteveKing\CompaniesHouse;
 
 use Illuminate\Validation\Rule;
 use Illuminate\Support\ServiceProvider;
