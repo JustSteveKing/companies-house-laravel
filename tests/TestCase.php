@@ -23,11 +23,7 @@ class TestCase extends Orchestra
 
     public function getEnvironmentSetUp($app)
     {
-        $env = parse_ini_file(__DIR__ . '/../.env');
-
-        if(! $env) {
-            $env = parse_ini_file(__DIR__ . '/../.env.ci');
-        }
+        $env = parse_ini_file(__DIR__ . '/../.env.ci');
 
         $app['config']->set(
             'companies-house.companies-house.api.key',
