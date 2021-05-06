@@ -1,154 +1,342 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JustSteveKing\CompaniesHouseLaravel;
 
+use RuntimeException;
 use Illuminate\Support\Facades\Http;
-use JustSteveKing\CompaniesHouseLaravel\Collections\CompanyCollection;
-use JustSteveKing\CompaniesHouseLaravel\Collections\OfficerCollection;
-use JustSteveKing\CompaniesHouseLaravel\Data\Company;
-use JustSteveKing\CompaniesHouseLaravel\Data\Company\CompanyOfficer;
-use JustSteveKing\CompaniesHouseLaravel\Data\Company\SearchResult;
+use Illuminate\Http\Client\PendingRequest;
+use JustSteveKing\CompaniesHouseLaravel\Concerns\HasFake;
 
 class Client
 {
+    use HasFake;
+    
     /**
-     * @var string
+     * Client constructor.
      */
-    private string $key;
+    public function __construct(
+        protected string $url,
+        protected string $apiKey,
+        protected int $timeout = 10,
+        protected null|int $retryTimes = null,
+        protected null|int $retryMilliseconds = null,
+    ) {}
 
     /**
-     * @var bool
+     * @return Client
      */
-    private bool $fake;
-
-    /**
-     * @var array|null
-     */
-    private ?array $fakeData;
-
-    /**
-     * CompaniesHouseLaravel constructor.
-     */
-    private function __construct(bool $fake = false, ?array $data = null)
-    {
-        $this->fake = $fake;
-        $this->fakeData = $data;
-        $this->key = config('companies-house-laravel.api.key');
-
-        if ($this->fake) {
-            Http::fake($this->fakeData);
-        }
+    public static function make(
+        string $url,
+        string $apiKey,
+        int $timeout = 10,
+        null|int $retryTimes = null,
+        null|int $retryMilliseconds = null,
+    ): Client {
+        return new Client(
+            url: $url,
+            apiKey: $apiKey,
+            timeout: $timeout,
+            retryTimes: $retryTimes,
+            retryMilliseconds: $retryMilliseconds,
+        );
     }
 
-    /**
-     * @return self
-     */
-    public static function make(): self
+    public function buildRequest(): PendingRequest
     {
-        return new self();
-    }
+        $request = Http::withBasicAuth(
+            username: $this->apiKey,
+            password: '',
+        )->withHeaders([
+            'Accept' => 'application/json'
+        ])->timeout(
+            seconds: $this->timeout,
+        );
 
-    /**
-     * @return self
-     */
-    public static function fake(array $data): self
-    {
-        return new self(true, $data);
-    }
-
-    /**
-     * @param string $number
-     * @return Company|null
-     */
-    public function company(string $number):? Company
-    {
-        $response = Http::withBasicAuth(
-            $this->key,
-            ''
-        )
-            ->get(config('companies-house-laravel.api.url') . '/company/' . $number);
-
-        if ($response->ok()) {
-            return Company::fromApi($response->json());
+        if (
+            ! is_null($this->retryTimes)
+            && ! is_null($this->retryMilliseconds)
+        ) {
+            $request->retry(
+                times: $this->retryTimes,
+                sleep: $this->retryMilliseconds,
+            );
         }
 
-        return null;
+        return $request;
     }
 
-    /**
-     * @param string $query
-     * @param int|null $perPage
-     * @param int|null $startIndex
-     * @return CompanyCollection|null
-     */
-    public function searchCompany(string $query, ?int $perPage = null, ?int $startIndex = null):? CompanyCollection
-    {
-        $response = Http::withBasicAuth(
-            $this->key,
-            ''
-        )->get(
-            config('companies-house-laravel.api.url') . '/search/companies',
-            [
+    public function search(
+        string $query,
+        string $prefix = '',
+        ?int $perPage = null,
+        ?int $startIndex = null,
+    ) {
+        $request = $this->buildRequest();
+
+        $response = $request->get(
+            url: "{$this->url}/search{$prefix}",
+            query: [
                 'q' => $query,
                 'items_per_page' => $perPage,
                 'start_index' => $startIndex,
-            ]
+            ],
         );
 
-        if (! $response->ok()) {
-            return null;
+        if (! $response->successful()) {
+            return $response->toException();
         }
 
-        $collection = new CompanyCollection();
-
-        if (empty($response->json('items'))) {
-            return $collection;
-        }
-
-        foreach ($response->json('items') as $item) {
-            if (is_array($item)) {
-                $collection->add(
-                    SearchResult::fromApi($item)
-                );
-            }
-        }
-
-        return $collection;
+        return $response;
     }
 
-    /**
-     * @param string $number
-     * @param int|null $perPage
-     * @param int|null $startIndex
-     * @return OfficerCollection|null
-     */
-    public function getOfficers(string $number, ?int $perPage = null, ?int $startIndex = null):? OfficerCollection
-    {
-        $response = Http::withBasicAuth(
-            $this->key,
-            ''
-        ) ->get(
-            config('companies-house-laravel.api.url') . '/company/' . $number . '/officers',
-            [
-                'items_per_page' => $perPage,
-                'start_index' => $startIndex,
-            ]
+    public function searchCompany(
+        string $query,
+        ?int $perPage = null,
+        ?int $startIndex = null,
+    ) {
+        return $this->search(
+            query: $query,
+            prefix: 'companies',
+            perPage: $perPage,
+            startIndex: $startIndex,
+        );
+    }
+
+    public function searchOfficers(
+        string $query,
+        ?int $perPage = null,
+        ?int $startIndex = null,
+    ) {
+        return $this->search(
+            query: $query,
+            prefix: 'officers',
+            perPage: $perPage,
+            startIndex: $startIndex,
+        );
+    }
+
+    public function searchDisqualifiedOfficers(
+        string $query,
+        ?int $perPage = null,
+        ?int $startIndex = null,
+    ) {
+        return $this->search(
+            query: $query,
+            prefix: 'disqualified-officers',
+            perPage: $perPage,
+            startIndex: $startIndex,
+        );
+    }
+
+    public function company(
+        string $companyNumber,
+    ) {
+        $request = $this->buildRequest();
+
+        $response = $request->get(
+            url: "{$this->url}/company/{$companyNumber}"
         );
 
-        if (! $response->ok()) {
-            return null;
+        if (! $response->successful()) {
+            return $response->toException();
         }
 
-        $collection = new OfficerCollection();
+        return $response;
+    }
 
-        foreach ($response->json('items') as $item) {
-            if (is_array($item)) {
-                $collection->add(
-                    CompanyOfficer::fromApi($item)
-                );
-            }
+    public function officers(
+        string $companyNumber,
+        ?int $perPage = null,
+        ?int $startIndex = null,
+    ){
+        $request = $this->buildRequest();
+
+        $response = $request->get(
+            url: "{$this->url}/company/{$companyNumber}/officers",
+            query: [
+                'items_per_page' => $perPage,
+                'start_index' => $startIndex,
+            ],
+        );
+
+        if (! $response->successful()) {
+            return $response->toException();
         }
 
-        return $collection;
+        return $response;
+    }
+
+    public function officer(
+        string $companyNumber,
+        string $appointmentId
+    ) {
+        $request = $this->buildRequest();
+
+        $response = $request->get(
+            url: "{$this->url}/company/{$companyNumber}/appointments/{$appointmentId}"
+        );
+
+        if (! $response->successful()) {
+            return $response->toException();
+        }
+
+        return $response;
+    }
+
+    public function registers(
+        string $companyNumber,
+    ) {
+        $request = $this->buildRequest();
+
+        $response = $request->get(
+            url: "{$this->url}/company/{$companyNumber}/registers",
+        );
+
+        if (! $response->successful()) {
+            return $response->toException();
+        }
+
+        return $response;
+    }
+
+    public function charges(
+        string $companyNumber,
+    ) {
+        $request = $this->buildRequest();
+
+        $response = $request->get(
+            url: "{$this->url}/company/{$companyNumber}/charges",
+        );
+
+        if (! $response->successful()) {
+            return $response->toException();
+        }
+
+        return $response;
+    }
+
+    public function charge(
+        string $companyNumber,
+        string $chargeId,
+    ) {
+        $request = $this->buildRequest();
+
+        $response = $request->get(
+            url: "{$this->url}/company/{$companyNumber}/charges/{$chargeId}",
+        );
+
+        if (! $response->successful()) {
+            return $response->toException();
+        }
+
+        return $response;
+    }
+
+    public function filingHistory(
+        string $companyNumber,
+    ) {
+        $request = $this->buildRequest();
+
+        $response = $request->get(
+            url: "{$this->url}/company/{$companyNumber}/filing-history",
+        );
+
+        if (! $response->successful()) {
+            return $response->toException();
+        }
+
+        return $response;
+    }
+
+    public function filingHistoryTransaction(
+        string $companyNumber,
+        string $transactionId,
+    ) {
+        $request = $this->buildRequest();
+
+        $response = $request->get(
+            url: "{$this->url}/company/{$companyNumber}/filing-history/{$transactionId}",
+        );
+
+        if (! $response->successful()) {
+            return $response->toException();
+        }
+
+        return $response;
+    }
+
+    public function insolvency(
+        string $companyNumber,
+    ) {
+        $request = $this->buildRequest();
+
+        $response = $request->get(
+            url: "{$this->url}/company/{$companyNumber}/insolvency",
+        );
+
+        if (! $response->successful()) {
+            return $response->toException();
+        }
+
+        return $response;
+    }
+
+    public function exemptions(
+        string $companyNumber,
+    ) {
+        $request = $this->buildRequest();
+
+        $response = $request->get(
+            url: "{$this->url}/company/{$companyNumber}/exemptions",
+        );
+
+        if (! $response->successful()) {
+            return $response->toException();
+        }
+
+        return $response;
+    }
+
+    public function disqualifications(
+        string $officerId,
+        null|string $prefix = null,
+    ) {
+        if (is_null($prefix) || ! in_array($prefix, ['corporate', 'natural'])) {
+            throw new RuntimeException(
+                "To check disqualified officers either pass 'corporate' or 'natural' under 'prefix'; {$prefix} passed"
+            );
+        }
+
+        $request = $this->buildRequest();
+
+        $uri = "{$this->url}/disqualified-officers/{$prefix}/{$officerId}";
+
+        $response = $request->get(
+            url: $uri,
+        );
+
+        if (! $response->successful()) {
+            return $response->toException();
+        }
+
+        return $response;
+    }
+
+    public function establishments(
+        string $companyNumber,
+    ) {
+        $request = $this->buildRequest();
+
+        $response = $request->get(
+            url: "{$this->url}/company/{$companyNumber}/uk-establishments",
+        );
+
+        if (! $response->successful()) {
+            return $response->toException();
+        }
+
+        return $response;
     }
 }

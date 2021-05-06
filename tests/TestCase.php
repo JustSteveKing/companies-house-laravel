@@ -1,28 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JustSteveKing\CompaniesHouseLaravel\Tests;
 
-use JustSteveKing\CompaniesHouseLaravel\CompaniesHouseLaravelServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
+use JustSteveKing\CompaniesHouseLaravel\CompaniesHouseLaravelServiceProvider;
 
 class TestCase extends Orchestra
 {
     public function setUp(): void
     {
         parent::setUp();
-
-        try {
-            $env = parse_ini_file(__DIR__ . '/../.env');
-            if (isset($env['COMPANIES_HOUSE_KEY'])) {
-                $this->app['config']->set('companies-house-laravel.api.key', $env['COMPANIES_HOUSE_KEY']);
-            }
-
-            if (isset($env['COMPANIES_HOUSE_URL'])) {
-                $this->app['config']->set('companies-house-laravel.api.url', $env['COMPANIES_HOUSE_URL']);
-            }
-        } catch (\Exception $e) {
-            //
-        }
     }
 
     protected function getPackageProviders($app)
@@ -34,12 +23,26 @@ class TestCase extends Orchestra
 
     public function getEnvironmentSetUp($app)
     {
-//        $app['config']->set('database.default', 'sqlite');
-//        $app['config']->set('database.connections.sqlite', [
-//            'driver' => 'sqlite',
-//            'database' => ':memory:',
-//            'prefix' => '',
-//        ]);
-//
+        $env = parse_ini_file(__DIR__ . '/../.env');
+        $app['config']->set(
+            'companies-house.companies-house.api.key',
+            $env['COMPANIES_HOUSE_KEY'],
+        );
+        $app['config']->set(
+            'companies-house.companies-house.api.url',
+            $env['COMPANIES_HOUSE_URL'],
+        );
+        $app['config']->set(
+            'companies-house.companies-house.api.timeout',
+            $env['COMPANIES_HOUSE_TIMEOUT'],
+        );
+        $app['config']->set(
+            'companies-house.companies-house.api.retry.times',
+            $env['COMPANIES_HOUSE_RETRY_TIMES'],
+        );
+        $app['config']->set(
+            'companies-house.companies-house.api.retry.milliseconds',
+            $env['COMPANIES_HOUSE_RETRY_MILLISECONDS'],
+        );
     }
 }
