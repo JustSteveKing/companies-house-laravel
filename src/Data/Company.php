@@ -96,7 +96,7 @@ class Company
         $this->number = isset($data['company_number']) ? $data['company_number'] : null;
         $this->type = isset($data['type']) ? $data['type'] : null;
         $this->confirmationStatement = Statement::make($data);
-        $this->hasCharges = isset($data['has_charges']) ? $data['has_charges'] ; null;
+        $this->hasCharges = isset($data['has_charges']) ? $data['has_charges'] : null;
         $this->canFile = isset($data['can_file']) ? $data['can_file'] : null;
     }
 
