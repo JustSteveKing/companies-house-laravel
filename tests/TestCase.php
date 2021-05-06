@@ -13,7 +13,7 @@ class TestCase extends Orchestra
     {
         parent::setUp();
 
-        $env = parse_ini_file(__DIR__ . '/../.env');
+        $env = parse_ini_file(__DIR__ . '/../.env.ci');
 
         $this->app['config']->set(
             'companies-house.api.key',
