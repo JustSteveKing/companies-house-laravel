@@ -12,7 +12,7 @@ class TestCase extends Orchestra
         parent::setUp();
 
         try {
-            $env = parse_ini_file(__DIR__ . '/../.env');
+            $env = parse_ini_file(__DIR__ . '/../.env.ci');
             if (isset($env['COMPANIES_HOUSE_KEY'])) {
                 $this->app['config']->set('companies-house-laravel.api.key', $env['COMPANIES_HOUSE_KEY']);
             }
