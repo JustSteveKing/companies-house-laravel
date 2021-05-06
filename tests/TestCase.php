@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace JustSteveKing\CompaniesHouseLaravel\Tests;
+namespace JustSteveKing\CompaniesHouse\Tests;
 
 use Orchestra\Testbench\TestCase as Orchestra;
-use JustSteveKing\CompaniesHouseLaravel\CompaniesHouseLaravelServiceProvider;
+use JustSteveKing\CompaniesHouse\CompaniesHouseServiceProvider;
 
 class TestCase extends Orchestra
 {
@@ -17,7 +17,7 @@ class TestCase extends Orchestra
     protected function getPackageProviders($app)
     {
         return [
-            CompaniesHouseLaravelServiceProvider::class,
+            CompaniesHouseServiceProvider::class,
         ];
     }
 

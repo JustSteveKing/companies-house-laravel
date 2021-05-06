@@ -28,12 +28,12 @@
     },
     "autoload": {
         "psr-4": {
-            "JustSteveKing\\CompaniesHouseLaravel\\": "src"
+            "JustSteveKing\\CompaniesHouse\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "JustSteveKing\\CompaniesHouseLaravel\\Tests\\": "tests"
+            "JustSteveKing\\CompaniesHouse\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -48,7 +48,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "JustSteveKing\\CompaniesHouseLaravel\\CompaniesHouseLaravelServiceProvider"
+                "JustSteveKing\\CompaniesHouse\\CompaniesHouseServiceProvider"
             ]
         }
     },

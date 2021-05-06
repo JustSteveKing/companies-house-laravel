@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JustSteveKing\CompaniesHouseLaravel\Concerns;
+namespace JustSteveKing\CompaniesHouse\Concerns;
 
 use Illuminate\Support\Facades\Http;
 

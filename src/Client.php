@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace JustSteveKing\CompaniesHouseLaravel;
+namespace JustSteveKing\CompaniesHouse;
 
 use RuntimeException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\PendingRequest;
-use JustSteveKing\CompaniesHouseLaravel\Concerns\HasFake;
+use JustSteveKing\CompaniesHouse\Concerns\HasFake;
 
 class Client
 {

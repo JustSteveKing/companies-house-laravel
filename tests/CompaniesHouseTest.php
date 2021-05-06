@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace JustSteveKing\CompaniesHouseLaravel\Tests;
+namespace JustSteveKing\CompaniesHouse\Tests;
 
-use Illuminate\Http\Client\PendingRequest;
-use JustSteveKing\CompaniesHouseLaravel\Client;
 use RuntimeException;
+use JustSteveKing\CompaniesHouse\Client;
+use Illuminate\Http\Client\PendingRequest;
 
 class CompaniesHouseTest extends TestCase
 {

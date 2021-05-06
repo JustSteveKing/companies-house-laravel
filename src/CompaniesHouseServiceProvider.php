@@ -6,9 +6,10 @@ namespace JustSteveKing\CompaniesHouseLaravel;
 
 use Illuminate\Validation\Rule;
 use Illuminate\Support\ServiceProvider;
-use JustSteveKing\CompaniesHouseLaravel\Rules\CompanyNumber;
+use JustSteveKing\CompaniesHouse\Client;
+use JustSteveKing\CompaniesHouse\Rules\CompanyNumber;
 
-class CompaniesHouseLaravelServiceProvider extends ServiceProvider
+class CompaniesHouseServiceProvider extends ServiceProvider
 {
     /**
      * inheritDoc
