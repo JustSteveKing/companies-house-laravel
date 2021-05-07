@@ -35,6 +35,25 @@ class CompaniesHouseTest extends TestCase
     /**
      * @test
      */
+    public function it_can_make_a_client()
+    {
+        $client = Client::make(
+            url: config('companies-house.api.url'),
+            apiKey: config('companies-house.api.key'),
+            timeout: (int) config('companies-house.api.timeout'),
+            retryTimes: (int) config('companies-house.api.retry.times'),
+            retryMilliseconds: (int) config('companies-house.api.retry.milliseconds'),
+        );
+
+        $this->assertInstanceOf(
+            expected: Client::class,
+            actual: $client,
+        );
+    }
+
+    /**
+     * @test
+     */
     public function it_can_search_all()
     {
         $this->client->fake();
@@ -172,11 +191,18 @@ class CompaniesHouseTest extends TestCase
     {
         $number = 'quite_obviously_fake';
 
+        $rule = Rule::companyNumber();
+
         $this->assertFalse(
-            condition: Rule::companyNumber()->passes(
+            condition: $rule->passes(
                 attributes: 'test',
                 value: $number,
             ),
+        );
+
+        $this->assertEquals(
+            expected: 'The submitted company number is not a valid UK company number.',
+            actual: $rule->message(),
         );
     }
 
