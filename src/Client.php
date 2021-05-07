@@ -5,9 +5,15 @@ declare(strict_types=1);
 namespace JustSteveKing\CompaniesHouse;
 
 use RuntimeException;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\PendingRequest;
+use JustSteveKing\CompaniesHouse\DTO\Officer;
 use JustSteveKing\CompaniesHouse\Concerns\HasFake;
+use JustSteveKing\CompaniesHouse\Actions\Company\CreateCompany;
+use JustSteveKing\CompaniesHouse\Actions\Officer\CreateOfficer;
+use JustSteveKing\CompaniesHouse\Collections\OfficersCollection;
+use JustSteveKing\CompaniesHouse\Actions\Search\CreateSearchResults;
 
 class Client
 {
@@ -88,7 +94,11 @@ class Client
             return $response->toException();
         }
 
-        return $response;
+        $searchCollection = (new CreateSearchResults())->handle(
+            response: $response,
+        );
+
+        return $searchCollection;
     }
 
     public function searchCompany(
@@ -143,7 +153,11 @@ class Client
             return $response->toException();
         }
 
-        return $response;
+        $company = (new CreateCompany())->handle(
+            response: $response,
+        );
+
+        return $company;
     }
 
     public function officers(
@@ -164,8 +178,26 @@ class Client
         if (! $response->successful()) {
             return $response->toException();
         }
+        
+        $data = $response->json();
 
-        return $response;
+        $officerColection = new OfficersCollection();
+
+        if (is_null($data)) {
+            return $officerColection;
+        }
+
+        foreach ($data['items'] as $item) {
+            $officer = (new CreateOfficer())->handle(
+                item: $item,
+            );
+            
+            $officerColection->add(
+                item: $officer,
+            );
+        }
+
+        return $officerColection;
     }
 
     public function officer(
@@ -182,161 +214,14 @@ class Client
             return $response->toException();
         }
 
-        return $response;
-    }
+        if (is_null($response->json())) {
+            return new Officer();
+        }
 
-    public function registers(
-        string $companyNumber,
-    ) {
-        $request = $this->buildRequest();
-
-        $response = $request->get(
-            url: "{$this->url}/company/{$companyNumber}/registers",
+        $officer = (new CreateOfficer())->handle(
+            item: $response->json(),
         );
 
-        if (! $response->successful()) {
-            return $response->toException();
-        }
-
-        return $response;
-    }
-
-    public function charges(
-        string $companyNumber,
-    ) {
-        $request = $this->buildRequest();
-
-        $response = $request->get(
-            url: "{$this->url}/company/{$companyNumber}/charges",
-        );
-
-        if (! $response->successful()) {
-            return $response->toException();
-        }
-
-        return $response;
-    }
-
-    public function charge(
-        string $companyNumber,
-        string $chargeId,
-    ) {
-        $request = $this->buildRequest();
-
-        $response = $request->get(
-            url: "{$this->url}/company/{$companyNumber}/charges/{$chargeId}",
-        );
-
-        if (! $response->successful()) {
-            return $response->toException();
-        }
-
-        return $response;
-    }
-
-    public function filingHistory(
-        string $companyNumber,
-    ) {
-        $request = $this->buildRequest();
-
-        $response = $request->get(
-            url: "{$this->url}/company/{$companyNumber}/filing-history",
-        );
-
-        if (! $response->successful()) {
-            return $response->toException();
-        }
-
-        return $response;
-    }
-
-    public function filingHistoryTransaction(
-        string $companyNumber,
-        string $transactionId,
-    ) {
-        $request = $this->buildRequest();
-
-        $response = $request->get(
-            url: "{$this->url}/company/{$companyNumber}/filing-history/{$transactionId}",
-        );
-
-        if (! $response->successful()) {
-            return $response->toException();
-        }
-
-        return $response;
-    }
-
-    public function insolvency(
-        string $companyNumber,
-    ) {
-        $request = $this->buildRequest();
-
-        $response = $request->get(
-            url: "{$this->url}/company/{$companyNumber}/insolvency",
-        );
-
-        if (! $response->successful()) {
-            return $response->toException();
-        }
-
-        return $response;
-    }
-
-    public function exemptions(
-        string $companyNumber,
-    ) {
-        $request = $this->buildRequest();
-
-        $response = $request->get(
-            url: "{$this->url}/company/{$companyNumber}/exemptions",
-        );
-
-        if (! $response->successful()) {
-            return $response->toException();
-        }
-
-        return $response;
-    }
-
-    public function disqualifications(
-        string $officerId,
-        null|string $prefix = null,
-    ) {
-        if (is_null($prefix) || ! in_array($prefix, ['corporate', 'natural'])) {
-            throw new RuntimeException(
-                "To check disqualified officers either pass 'corporate' or 'natural' under 'prefix'; {$prefix} passed"
-            );
-        }
-
-        $request = $this->buildRequest();
-
-        $uri = "{$this->url}/disqualified-officers/{$prefix}/{$officerId}";
-
-        $response = $request->get(
-            url: $uri,
-        );
-
-        if (! $response->successful()) {
-            return $response->toException();
-        }
-
-        return $response;
-    }
-
-    public function establishments(
-        string $companyNumber,
-    ) {
-        $request = $this->buildRequest();
-
-        $response = $request->get(
-            url: "{$this->url}/company/{$companyNumber}/uk-establishments",
-        );
-
-        if (! $response->successful()) {
-            return $response->toException();
-        }
-
-        return $response;
+        return $officer;
     }
 }

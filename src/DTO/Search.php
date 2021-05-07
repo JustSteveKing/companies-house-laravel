@@ -9,8 +9,7 @@ use JustSteveKing\CompaniesHouse\Collections\SearchCollection;
 
 class Search extends DataTransferObject
 {
-    public string $kind;
-    public int $itemsPerPage;
-    public int $totalResults;
+    public null|string $kind;
+    public null|int $totalResults;
     public SearchCollection $results;
 }

@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace JustSteveKing\CompaniesHouse\Tests;
 
-use RuntimeException;
+use Illuminate\Validation\Rule;
 use JustSteveKing\CompaniesHouse\Client;
 use Illuminate\Http\Client\PendingRequest;
+use JustSteveKing\CompaniesHouse\DTO\Search;
+use JustSteveKing\CompaniesHouse\DTO\Company;
+use JustSteveKing\CompaniesHouse\DTO\Officer;
+use JustSteveKing\CompaniesHouse\Collections\OfficersCollection;
 
 class CompaniesHouseTest extends TestCase
 {
@@ -36,12 +40,12 @@ class CompaniesHouseTest extends TestCase
         $this->client->fake();
 
         $response = $this->client->search(
-            query: 'Lila Fuches Limited',
+            query: 'test',
         );
 
-        $this->assertEquals(
-            expected: 200,
-            actual: $response->getStatusCode(),
+        $this->assertInstanceOf(
+            expected: Search::class,
+            actual: $response,
         );
     }
 
@@ -56,9 +60,9 @@ class CompaniesHouseTest extends TestCase
             query: 'test',
         );
 
-        $this->assertEquals(
-            expected: 200,
-            actual: $response->getStatusCode(),
+        $this->assertInstanceOf(
+            expected: Search::class,
+            actual: $response,
         );
     }
 
@@ -73,9 +77,9 @@ class CompaniesHouseTest extends TestCase
             query: 'test',
         );
 
-        $this->assertEquals(
-            expected: 200,
-            actual: $response->getStatusCode(),
+        $this->assertInstanceOf(
+            expected: Search::class,
+            actual: $response,
         );
     }
 
@@ -90,9 +94,9 @@ class CompaniesHouseTest extends TestCase
             query: 'test',
         );
 
-        $this->assertEquals(
-            expected: 200,
-            actual: $response->getStatusCode(),
+        $this->assertInstanceOf(
+            expected: Search::class,
+            actual: $response,
         );
     }
 
@@ -107,9 +111,9 @@ class CompaniesHouseTest extends TestCase
             companyNumber: 'test'
         );
 
-        $this->assertEquals(
-            expected: 200,
-            actual: $response->getStatusCode(),
+        $this->assertInstanceOf(
+            expected: Company::class,
+            actual: $response,
         );
     }
 
@@ -124,9 +128,9 @@ class CompaniesHouseTest extends TestCase
             companyNumber: 'test'
         );
 
-        $this->assertEquals(
-            expected: 200,
-            actual: $response->getStatusCode(),
+        $this->assertInstanceOf(
+            expected: OfficersCollection::class,
+            actual: $response,
         );
     }
 
@@ -139,191 +143,12 @@ class CompaniesHouseTest extends TestCase
 
         $response = $this->client->officer(
             companyNumber: 'test',
-            appointmentId: '123',
+            appointmentId: 'test',
         );
 
-        $this->assertEquals(
-            expected: 200,
-            actual: $response->getStatusCode(),
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_get_all_company_registers()
-    {
-        $this->client->fake();
-
-        $response = $this->client->registers(
-            companyNumber: 'test'
-        );
-
-        $this->assertEquals(
-            expected: 200,
-            actual: $response->getStatusCode(),
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_get_all_company_charges()
-    {
-        $this->client->fake();
-
-        $response = $this->client->charges(
-            companyNumber: 'test'
-        );
-
-        $this->assertEquals(
-            expected: 200,
-            actual: $response->getStatusCode(),
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_get_a_specific_company_charge()
-    {
-        $this->client->fake();
-
-        $response = $this->client->charge(
-            companyNumber: 'test',
-            chargeId: '123',
-        );
-
-        $this->assertEquals(
-            expected: 200,
-            actual: $response->getStatusCode(),
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_get_a_companies_filing_history()
-    {
-        $this->client->fake();
-
-        $response = $this->client->filingHistory(
-            companyNumber: 'test',
-        );
-
-        $this->assertEquals(
-            expected: 200,
-            actual: $response->getStatusCode(),
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_get_a_specific_filing_history_transaction()
-    {
-        $this->client->fake();
-
-        $response = $this->client->filingHistoryTransaction(
-            companyNumber: 'test',
-            transactionId: '123',
-        );
-
-        $this->assertEquals(
-            expected: 200,
-            actual: $response->getStatusCode(),
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_get_a_companies_insolvency_information()
-    {
-        $this->client->fake();
-
-        $response = $this->client->insolvency(
-            companyNumber: 'test',
-        );
-
-        $this->assertEquals(
-            expected: 200,
-            actual: $response->getStatusCode(),
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_get_a_companies_exemption_information()
-    {
-        $this->client->fake();
-
-        $response = $this->client->exemptions(
-            companyNumber: 'test',
-        );
-
-        $this->assertEquals(
-            expected: 200,
-            actual: $response->getStatusCode(),
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_get_an_officers_disqualifications()
-    {
-        $this->client->fake();
-
-        $response = $this->client->disqualifications(
-            officerId: 'test',
-            prefix: 'corporate',
-        );
-
-        $this->assertEquals(
-            expected: 200,
-            actual: $response->getStatusCode(),
-        );
-
-        $response = $this->client->disqualifications(
-            officerId: 'test',
-            prefix: 'natural',
-        );
-
-        $this->assertEquals(
-            expected: 200,
-            actual: $response->getStatusCode(),
-        );
-
-        $this->expectException(
-            exception: RuntimeException::class,
-        );
-
-        $this->expectExceptionMessage(
-            message: "To check disqualified officers either pass 'corporate' or 'natural' under 'prefix'; test passed"
-        );
-
-        $response = $this->client->disqualifications(
-            officerId: 'test',
-            prefix: 'test',
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_can_get_a_companies_establishments()
-    {
-        $this->client->fake();
-
-        $response = $this->client->establishments(
-            companyNumber: 'test',
-        );
-
-        $this->assertEquals(
-            expected: 200,
-            actual: $response->getStatusCode(),
+        $this->assertInstanceOf(
+            expected: Officer::class,
+            actual: $response,
         );
     }
 
@@ -337,6 +162,36 @@ class CompaniesHouseTest extends TestCase
         $this->assertInstanceOf(
             expected: PendingRequest::class,
             actual: $this->client->buildRequest(),
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_fails_when_using_the_rule_macro()
+    {
+        $number = 'quite_obviously_fake';
+
+        $this->assertFalse(
+            condition: Rule::companyNumber()->passes(
+                attributes: 'test',
+                value: $number,
+            ),
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function it_passes_when_using_the_rule_macro()
+    {
+        $number = '02627406';
+
+        $this->assertTrue(
+            condition: Rule::companyNumber()->passes(
+                attributes: 'test',
+                value: $number,
+            ),
         );
     }
 }
