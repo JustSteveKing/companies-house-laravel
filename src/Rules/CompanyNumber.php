@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JustSteveKing\CompaniesHouse\Rules;
 
+use Throwable;
 use JustSteveKing\CompaniesHouse\Client;
 use Illuminate\Contracts\Validation\Rule;
-use Illuminate\Http\Client\RequestException;
-use Throwable;
 
 class CompanyNumber implements Rule
 {
@@ -15,7 +16,8 @@ class CompanyNumber implements Rule
      */
     public function __construct(
         private Client $client,
-    ) {}
+    ) {
+    }
 
     /**
      * @param string $attributes
@@ -24,11 +26,15 @@ class CompanyNumber implements Rule
      */
     public function passes($attributes, $value): bool
     {
-        $response = $this->client->company(
-            companyNumber: $value,
-        );
+        try {
+            $response = $this->client->company(
+                companyNumber: $value,
+            );
+        } catch (Throwable) {
+            return false;
+        }
 
-        return ! ($response instanceof RequestException);
+        return true;
     }
 
     /**

@@ -5,14 +5,20 @@ declare(strict_types=1);
 namespace JustSteveKing\CompaniesHouse\Actions\Search;
 
 use Illuminate\Http\Client\Response;
-use JustSteveKing\CompaniesHouse\Collections\SearchCollection;
-use JustSteveKing\CompaniesHouse\DTO\Address;
 use JustSteveKing\CompaniesHouse\DTO\Search;
 use JustSteveKing\CompaniesHouse\DTO\SearchResultCompany;
 use JustSteveKing\CompaniesHouse\DTO\SearchResultOfficer;
+use JustSteveKing\CompaniesHouse\Collections\SearchCollection;
 
 class CreateSearchResults
 {
+    /**
+     * Handle the creation of Search Results
+     *
+     * @param Response $response
+     *
+     * @return Search
+     */
     public function handle(Response $response): Search
     {
         $data = $response->json();
@@ -36,7 +42,7 @@ class CreateSearchResults
                 }
                 
                 if (
-                    $item['kind'] === 'searchresults#officer' || 
+                    $item['kind'] === 'searchresults#officer' ||
                     $item['kind'] === 'searchresults#disqualified-officer'
                 ) {
                     $result = SearchResultOfficer::hydrate(

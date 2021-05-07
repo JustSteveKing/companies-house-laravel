@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace JustSteveKing\CompaniesHouse;
 
-use RuntimeException;
-use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\PendingRequest;
+use JustSteveKing\CompaniesHouse\DTO\Search;
 use JustSteveKing\CompaniesHouse\DTO\Officer;
 use JustSteveKing\CompaniesHouse\Concerns\HasFake;
+use JustSteveKing\CompaniesHouse\Collections\SearchCollection;
 use JustSteveKing\CompaniesHouse\Actions\Company\CreateCompany;
 use JustSteveKing\CompaniesHouse\Actions\Officer\CreateOfficer;
 use JustSteveKing\CompaniesHouse\Collections\OfficersCollection;
 use JustSteveKing\CompaniesHouse\Actions\Search\CreateSearchResults;
+use JustSteveKing\CompaniesHouse\DTO\Company;
 
 class Client
 {
@@ -21,6 +22,8 @@ class Client
     
     /**
      * Client constructor.
+     *
+     * @return void
      */
     public function __construct(
         protected string $url,
@@ -28,9 +31,12 @@ class Client
         protected int|string $timeout = 10,
         protected null|string|int $retryTimes = null,
         protected null|string|int $retryMilliseconds = null,
-    ) {}
+    ) {
+    }
 
     /**
+     * Make a new Client
+     *
      * @return Client
      */
     public static function make(
@@ -49,6 +55,11 @@ class Client
         );
     }
 
+    /**
+     * Build our default Request
+     *
+     * @return PendingRequest
+     */
     public function buildRequest(): PendingRequest
     {
         $request = Http::withBasicAuth(
@@ -73,12 +84,24 @@ class Client
         return $request;
     }
 
+    /**
+     * Search everything
+     *
+     * @param string $query
+     * @param string $prefix
+     * @param null|int $perPage
+     * @param null|int $startIndex
+     *
+     * @throws Illuminate\Http\Client\RequestException
+     *
+     * @return Search
+     */
     public function search(
         string $query,
         string $prefix = '',
-        ?int $perPage = null,
-        ?int $startIndex = null,
-    ) {
+        null|int $perPage = null,
+        null|int $startIndex = null,
+    ): Search {
         $request = $this->buildRequest();
 
         $response = $request->get(
@@ -101,11 +124,22 @@ class Client
         return $searchCollection;
     }
 
+    /**
+     * Search companies
+     *
+     * @param string $query
+     * @param null|int $perPage
+     * @param null|int $startIndex
+     *
+     * @throws Illuminate\Http\Client\RequestException
+     *
+     * @return Search
+     */
     public function searchCompany(
         string $query,
         ?int $perPage = null,
         ?int $startIndex = null,
-    ) {
+    ): Search {
         return $this->search(
             query: $query,
             prefix: 'companies',
@@ -114,11 +148,22 @@ class Client
         );
     }
 
+    /**
+     * Search Officers
+     *
+     * @param string $query
+     * @param null|int $perPage
+     * @param null|int $startIndex
+     *
+     * @throws Illuminate\Http\Client\RequestException
+     *
+     * @return Search
+     */
     public function searchOfficers(
         string $query,
         ?int $perPage = null,
         ?int $startIndex = null,
-    ) {
+    ): Search {
         return $this->search(
             query: $query,
             prefix: 'officers',
@@ -127,11 +172,22 @@ class Client
         );
     }
 
+    /**
+     * Search Disqualified Officers
+     *
+     * @param string $query
+     * @param null|int $perPage
+     * @param null|int $startIndex
+     *
+     * @throws Illuminate\Http\Client\RequestException
+     *
+     * @return Search
+     */
     public function searchDisqualifiedOfficers(
         string $query,
         ?int $perPage = null,
         ?int $startIndex = null,
-    ) {
+    ): Search {
         return $this->search(
             query: $query,
             prefix: 'disqualified-officers',
@@ -140,9 +196,18 @@ class Client
         );
     }
 
+    /**
+     * Lookup a Company by their company number
+     *
+     * @param string $companyNumber
+     *
+     * @throws Illuminate\Http\Client\RequestException
+     *
+     * @return Company
+     */
     public function company(
         string $companyNumber,
-    ) {
+    ): Company {
         $request = $this->buildRequest();
 
         $response = $request->get(
@@ -160,11 +225,22 @@ class Client
         return $company;
     }
 
+    /**
+     * Retrieve all Company Officer as a Collection
+     *
+     * @param string $companyNumber
+     * @param null|int $perPage
+     * @param null|int $startIndex
+     *
+     * @throws Illuminate\Http\Client\RequestException
+     *
+     * @return OfficersCollection
+     */
     public function officers(
         string $companyNumber,
-        ?int $perPage = null,
-        ?int $startIndex = null,
-    ){
+        null|int $perPage = null,
+        null|int $startIndex = null,
+    ): OfficersCollection {
         $request = $this->buildRequest();
 
         $response = $request->get(
@@ -200,10 +276,20 @@ class Client
         return $officerColection;
     }
 
+    /**
+     * Get a Company Officer by their appointment ID
+     *
+     * @param string $companyNumber
+     * @param string $appointmentId
+     *
+     * @throws Illuminate\Http\Client\RequestException
+     *
+     * @return Officer
+     */
     public function officer(
         string $companyNumber,
         string $appointmentId
-    ) {
+    ): Officer {
         $request = $this->buildRequest();
 
         $response = $request->get(

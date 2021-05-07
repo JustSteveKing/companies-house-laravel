@@ -9,13 +9,43 @@ use Spatie\DataTransferObject\DataTransferObject;
 
 class Accounts extends DataTransferObject
 {
+    /**
+     * @var null|bool
+     */
     public null|bool $overdue;
-    public Carbon $nextMadeUpTo;
-    public Carbon $nextDue;
-    public NextAccounts $nextAccounts;
-    public LastAccounts $lastAccounts;
-    public AccountingReference $accountingReferenceDate;
 
+    /**
+     * @var null|Carbon
+     */
+    public null|Carbon $nextMadeUpTo;
+
+    /**
+     * @var null|Carbon
+     */
+    public null|Carbon $nextDue;
+
+    /**
+     * @var null|NextAccounts
+     */
+    public null|NextAccounts $nextAccounts;
+
+    /**
+     * @var null|LastAccounts
+     */
+    public null|LastAccounts $lastAccounts;
+
+    /**
+     * @var null|AccountingReference
+     */
+    public null|AccountingReference $accountingReferenceDate;
+
+    /**
+     * Hydrate Accounts
+     *
+     * @param array $item
+     *
+     * @return self
+     */
     public static function hydrate(array $item): self
     {
         return new self(

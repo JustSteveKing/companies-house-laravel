@@ -8,6 +8,13 @@ use JustSteveKing\CompaniesHouse\DTO\Officer;
 
 class CreateOfficer
 {
+    /**
+     * Handle the creation of an Officer
+     *
+     * @param Response $response
+     *
+     * @return Officer
+     */
     public function handle(array $item): Officer
     {
         return Officer::hydrate(

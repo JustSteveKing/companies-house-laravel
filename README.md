@@ -1,19 +1,17 @@
+# Laravel Companies House
+
 <p align="center">
 
 ![](./companies-house-laravel.png)
 
 </p>
 
-# A Laravel wrapper to get companies house information and validate company numbers
-
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/juststeveking/companies-house-laravel.svg?style=flat-square)](https://packagist.org/packages/juststeveking/companies-house-laravel)
 ![Tests](https://github.com/juststeveking/companies-house-laravel/workflows/Tests/badge.svg?branch=master)
 [![Total Downloads](https://img.shields.io/packagist/dt/juststeveking/companies-house-laravel.svg?style=flat-square)](https://packagist.org/packages/juststeveking/companies-house-laravel)
 
 
-A Laravel wrapper to get companies house information and validate company numbers. This is a work in progress and more methods will be added to the API as they are required.
-
-This has been tested thoroughly in Laravel 8, Laravel 7 is supported but if you find issues please do drop a detailed issue.
+A Laravel wrapper to get companies house information and validate company numbers.
 
 ## Installation
 
@@ -25,7 +23,7 @@ composer require juststeveking/companies-house-laravel
 
 You can publish the config file with:
 ```bash
-php artisan vendor:publish --provider="JustSteveKing\CompaniesHouseLaravel\CompaniesHouseLaravelServiceProvider" --tag="config"
+php artisan vendor:publish --provider="JustSteveKing\CompaniesHouse\CompaniesHouseServiceProvider" --tag="config"
 ```
 
 This is the contents of the published config file:
@@ -34,24 +32,178 @@ This is the contents of the published config file:
 return [
     'api' => [
         'key' => env('COMPANIES_HOUSE_KEY', ''),
-        'url' => env('COMPANIES_HOUSE_URL', 'https://api.companieshouse.gov.uk')
+        'url' => env('COMPANIES_HOUSE_URL', 'https://api.company-information.service.gov.uk'),
+        'timeout' => env('COMPANIES_HOUSE_TIMEOUT', 10),
+        'retry' => [
+            'times' => env('COMPANIES_HOUSE_RETRY_TIMES', null),
+            'milliseconds' => env('COMPANIES_HOUSE_RETRY_MILLISECONDS', null),
+        ],
     ]
 ];
 ```
 
 ## Usage
 
-Using it inline:
+This library is aimed to be easy to use, and slots into Laravel with no issues.
+
+The package will install a Service Provider for you, meaning that all you need to do is resolve the `Client` from the container, and start using it.
+
+
+### Get A Company Profile
+
+To get a company profile, you can quite simply:
 
 ```php
-use JustSteveKing\CompaniesHouseLaravel\Client;
+use JustSteveKing\CompaniesHouse\Client;
 
-// Make a new client
-$api = Client::make();
+class CompanyController extends Controler
+{
+    public function __construct(
+        protected Client $service,
+    ) {}
 
-// Get Company information from a company number
-$company = $api->company('company-number');
+    public function __invoke(Request $request)
+    {
+        $company = $this->service->company(
+            companyNumber: $request->get('company_number')
+        );
+    }
+}
 ```
+
+
+## Get A Companies Officers
+
+You can get a `Collection` of Company Officers using the companies number:
+
+```php
+use JustSteveKing\CompaniesHouse\Client;
+
+class CompanyOfficersController extends Controler
+{
+    public function __construct(
+        protected Client $service,
+    ) {}
+
+    public function __invoke(Request $request)
+    {
+        $company = $this->service->officers(
+            companyNumber: $request->get('company_number')
+        );
+    }
+}
+```
+
+
+### Get a specific Officer from a Company
+
+You can get an `Officer` from a company using the company number and their appointment ID:
+
+```php
+use JustSteveKing\CompaniesHouse\Client;
+
+class CompanyOfficerController extends Controler
+{
+    public function __construct(
+        protected Client $service,
+    ) {}
+
+    public function __invoke(Request $request)
+    {
+        $company = $this->service->officer(
+            companyNumber: $request->get('company_number'),
+            appointmentId: $request->get('appointment_id'),
+        );
+    }
+}
+```
+
+
+### Searching
+
+There are a few options when it comes to searching, you can search for:
+
+- companies
+- officers
+- disqualified officers
+- search all
+
+
+#### Searching for Companies
+
+This will return a `SearchCollection`
+
+```php
+use JustSteveKing\CompaniesHouse\Client;
+
+class CompanySearchController extends Controler
+{
+    public function __construct(
+        protected Client $service,
+    ) {}
+
+    public function __invoke(Request $request)
+    {
+        $results = $this->service->searchCompany(
+            query: $request->get('query'),
+            perPage: 25, //optional
+            startIndex: 0, //optional
+        );
+    }
+}
+```
+
+
+#### Searching for Officers
+
+This will return a `SearchCollection`
+
+```php
+use JustSteveKing\CompaniesHouse\Client;
+
+class OfficersSearchController extends Controler
+{
+    public function __construct(
+        protected Client $service,
+    ) {}
+
+    public function __invoke(Request $request)
+    {
+        $results = $this->service->searchOfficers(
+            query: $request->get('query'),
+            perPage: 25, //optional
+            startIndex: 0, //optional
+        );
+    }
+}
+```
+
+
+#### Searching everything
+
+This will return a `SearchCollection`
+
+```php
+use JustSteveKing\CompaniesHouse\Client;
+
+class SearchController extends Controler
+{
+    public function __construct(
+        protected Client $service,
+    ) {}
+
+    public function __invoke(Request $request)
+    {
+        $results = $this->service->search(
+            query: $request->get('query'),
+            perPage: 25, //optional
+            startIndex: 0, //optional
+        );
+    }
+}
+```
+
+## Validation
 
 Using the validation inline:
 
@@ -65,54 +217,8 @@ $this->validate($request, [
 ]);
 ```
 
-Searching for a company by name, please note this will return an empty collection if there are no results:
-
-```php
-use JustSteveKing\CompaniesHouseLaravel\Client;
-
-$api = Client::make();
-
-// Get a collection of Company\SearchResult inside of a CompanyCollection
-$results = $api->searchCompany('Name you want to search');
-
-// You now have access to all standard Laravel collection methods
-$results->each(function ($result) {
-    // Do something with the result here.
-});
-```
-
-Fetching a Collection of Company Officers will return an OfficerCollection:
-
-```php
-use JustSteveKing\CompaniesHouseLaravel\Client;
-
-$api = Client::make();
-
-// Get a collection of Company\SearchResult inside of a CompanyCollection
-$results = $api->getOfficers('company-number');
-
-// You now have access to all standard Laravel collection methods
-$results->each(function ($result) {
-    // Do something with the result here.
-});
-```
-
 
 ## Testing
-
-### Using this library in your own tests
-
-There is a relatively simple testing utility on this library, that allows you to fake the underlying Http client:
-
-```php
-use Illuminate\Support\Facades\Http
-use JustSteveKing\CompaniesHouseLaravel\Client;
-
-$fakedApi = Client::fake([
-    'https://api.companieshouse.gov.uk/*',
-    Http::response([], 200, [])
-]);
-```
 
 To understand how to use this part please follow the Laravel documentation for [Testing the Http Client](https://laravel.com/docs/8.x/http-client#testing)
 

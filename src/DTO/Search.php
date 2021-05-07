@@ -9,7 +9,18 @@ use JustSteveKing\CompaniesHouse\Collections\SearchCollection;
 
 class Search extends DataTransferObject
 {
+    /**
+     * @var null|string
+     */
     public null|string $kind;
+
+    /**
+     * @var null|int
+     */
     public null|int $totalResults;
+
+    /**
+     * @var SearchCollection
+     */
     public SearchCollection $results;
 }

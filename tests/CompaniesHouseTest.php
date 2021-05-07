@@ -122,10 +122,10 @@ class CompaniesHouseTest extends TestCase
      */
     public function it_can_get_a_companies_officers()
     {
-        $this->client->fake();
+        // $this->client->fake();
 
         $response = $this->client->officers(
-            companyNumber: 'test'
+            companyNumber: '02627406'
         );
 
         $this->assertInstanceOf(

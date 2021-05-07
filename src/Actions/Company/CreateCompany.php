@@ -9,6 +9,13 @@ use JustSteveKing\CompaniesHouse\DTO\Company;
 
 class CreateCompany
 {
+    /**
+     * Handle the creation of a Company
+     *
+     * @param Response $response
+     *
+     * @return Company
+     */
     public function handle(Response $response): Company
     {
         if (is_null($response->json())) {

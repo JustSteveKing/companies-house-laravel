@@ -8,10 +8,24 @@ use Spatie\DataTransferObject\DataTransferObject;
 
 class DateOfBirth extends DataTransferObject
 {
+    /**
+     * @var null|int
+     */
     public null|int $month;
+
+    /**
+     * @var null|int
+     */
     public null|int $year;
 
-    public static function hydrate(array $item): self
+    /**
+     * Hydrate DateOfBirth
+     *
+     * @param array $item
+     *
+     * @return self
+     */
+    public static function hydrate(null|array $item = null): self
     {
         return new self(
             month: $item['month'] ?? null,

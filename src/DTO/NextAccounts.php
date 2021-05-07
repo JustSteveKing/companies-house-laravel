@@ -9,11 +9,33 @@ use Spatie\DataTransferObject\DataTransferObject;
 
 class NextAccounts extends DataTransferObject
 {
+    /**
+     * @var null|bool
+     */
     public null|bool $overdue;
-    public Carbon $dueOn;
-    public Carbon $periodEndOn;
-    public Carbon $periodStartOn;
 
+    /**
+     * @var null|Carbon
+     */
+    public null|Carbon $dueOn;
+
+    /**
+     * @var null|Carbon
+     */
+    public null|Carbon $periodEndOn;
+
+    /**
+     * @var null|Carbon
+     */
+    public null|Carbon $periodStartOn;
+
+    /**
+     * Hydrate NextAccounts
+     *
+     * @param array $item
+     *
+     * @return self
+     */
     public static function hydrate(array $item): self
     {
         return new self(

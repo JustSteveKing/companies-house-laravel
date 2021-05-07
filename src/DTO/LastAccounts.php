@@ -9,11 +9,33 @@ use Spatie\DataTransferObject\DataTransferObject;
 
 class LastAccounts extends DataTransferObject
 {
-    public Carbon $periodStartOn;
-    public Carbon $periodEndOn;
-    public null|string $type;
-    public Carbon $madeUpTo;
+    /**
+     * @var null|Carbon
+     */
+    public null|Carbon $periodStartOn;
 
+    /**
+     * @var null|Carbon
+     */
+    public null|Carbon $periodEndOn;
+
+    /**
+     * @var null|string
+     */
+    public null|string $type;
+
+    /**
+     * @var null|Carbon
+     */
+    public null|Carbon $madeUpTo;
+
+    /**
+     * Hydrate LastAccounts
+     *
+     * @param array $item
+     *
+     * @return self
+     */
     public static function hydrate(array $item): self
     {
         return new self(

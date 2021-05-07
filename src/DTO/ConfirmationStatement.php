@@ -9,11 +9,33 @@ use Spatie\DataTransferObject\DataTransferObject;
 
 class ConfirmationStatement extends DataTransferObject
 {
+    /**
+     * @var null|bool
+     */
     public null|bool $overdue;
-    public Carbon $nextDue;
-    public Carbon $lastMadeUpTo;
-    public Carbon $nextMadeUpTo;
 
+    /**
+     * @var null|Carbon
+     */
+    public null|Carbon $nextDue;
+
+    /**
+     * @var null|Carbon
+     */
+    public null|Carbon $lastMadeUpTo;
+
+    /**
+     * @var null|Carbon
+     */
+    public null|Carbon $nextMadeUpTo;
+
+    /**
+     * Hydrate ConfirmationStatement
+     *
+     * @param array $item
+     *
+     * @return self
+     */
     public static function hydrate(array $item): self
     {
         return new self(
