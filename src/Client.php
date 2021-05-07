@@ -142,7 +142,7 @@ class Client
     ): Search|RequestException {
         return $this->search(
             query: $query,
-            prefix: 'companies',
+            prefix: '/companies',
             perPage: $perPage,
             startIndex: $startIndex,
         );
@@ -166,7 +166,7 @@ class Client
     ): Search|RequestException {
         return $this->search(
             query: $query,
-            prefix: 'officers',
+            prefix: '/officers',
             perPage: $perPage,
             startIndex: $startIndex,
         );
@@ -190,7 +190,7 @@ class Client
     ): Search|RequestException {
         return $this->search(
             query: $query,
-            prefix: 'disqualified-officers',
+            prefix: '/disqualified-officers',
             perPage: $perPage,
             startIndex: $startIndex,
         );
