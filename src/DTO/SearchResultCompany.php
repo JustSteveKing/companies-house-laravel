@@ -75,7 +75,9 @@ class SearchResultCompany extends DataTransferObject
     {
         return new self(
             type: $item['company_type'] ?? null,
-            dateOfCreation: Carbon::parse($item['date_of_creation']),
+            dateOfCreation: isset($item['date_of_creation'])
+                ? Carbon::parse($item['date_of_creation'])
+                : null,
             title: $item['title'] ?? null,
             status: $item['company_status'] ?? null,
             kind: $item['kind'] ?? null,
@@ -84,9 +86,10 @@ class SearchResultCompany extends DataTransferObject
             companyNumber: $item['company_number'] ?? null,
             description: $item['description'] ?? null,
             descriptionIdentifiers: $item['description_identifier'][0],
-            address: Address::hydrate(
-                item: $item['address'],
-            ),
+            address: isset($item['address'])
+                ? Address::hydrate(
+                    item: $item['address'],
+                ) : null,
         );
     }
 }
