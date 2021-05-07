@@ -141,7 +141,7 @@ class CompaniesHouseTest extends TestCase
      */
     public function it_can_get_a_companies_officers()
     {
-        // $this->client->fake();
+        $this->client->fake();
 
         $response = $this->client->officers(
             companyNumber: '02627406'
@@ -211,6 +211,8 @@ class CompaniesHouseTest extends TestCase
      */
     public function it_passes_when_using_the_rule_macro()
     {
+        $this->client->fake();
+        
         $number = '02627406';
 
         $this->assertTrue(
