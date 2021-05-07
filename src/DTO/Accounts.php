@@ -49,18 +49,28 @@ class Accounts extends DataTransferObject
     public static function hydrate(array $item): self
     {
         return new self(
-            overdue: $item['overdue'],
-            nextDue: Carbon::parse($item['next_due']),
-            nextMadeUpTo: Carbon::parse($item['next_made_up_to']),
-            nextAccounts: NextAccounts::hydrate(
-                item: $item['next_accounts'],
-            ),
-            lastAccounts: LastAccounts::hydrate(
-                item: $item['last_accounts'],
-            ),
-            accountingReferenceDate: AccountingReference::hydrate(
-                item: $item['accounting_reference_date'],
-            ),
+            overdue: $item['overdue'] ?? null,
+            nextDue: isset($item['next_due'])
+                ? Carbon::parse($item['next_due'])
+                : null,
+            nextMadeUpTo: isset($item['next_made_up_to'])
+                ? Carbon::parse($item['next_made_up_to'])
+                : null,
+            nextAccounts: isset($item['next_accounts'])
+                ? NextAccounts::hydrate(
+                    item: $item['next_accounts'],
+                )
+                : null,
+            lastAccounts: isset($item['last_accounts'])
+                ? LastAccounts::hydrate(
+                    item: $item['last_accounts'],
+                )
+                : null,
+            accountingReferenceDate: isset($item['accounting_reference_date'])
+                ? AccountingReference::hydrate(
+                    item: $item['accounting_reference_date'],
+                )
+                : null,
         );
     }
 }

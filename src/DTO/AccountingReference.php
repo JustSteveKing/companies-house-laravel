@@ -28,8 +28,8 @@ class AccountingReference extends DataTransferObject
     public static function hydrate(array $item): self
     {
         return new self(
-            day: $item['day'],
-            month: $item['month'],
+            day: $item['day'] ?? null,
+            month: $item['month'] ?? null,
         );
     }
 }

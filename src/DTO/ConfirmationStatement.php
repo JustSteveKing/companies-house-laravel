@@ -39,10 +39,16 @@ class ConfirmationStatement extends DataTransferObject
     public static function hydrate(array $item): self
     {
         return new self(
-            overdue: $item['overdue'],
-            nextDue: Carbon::parse($item['next_due']),
-            lastMadeUpTo: Carbon::parse($item['last_made_up_to']),
-            nextMadeUpTo: Carbon::parse($item['next_made_up_to']),
+            overdue: $item['overdue'] ?? null,
+            nextDue: isset($item['next_due'])
+                ? Carbon::parse($item['next_due'])
+                : null,
+            lastMadeUpTo: isset($item['last_made_up_to'])
+                ? Carbon::parse($item['last_made_up_to'])
+                : null,
+            nextMadeUpTo: isset($item['next_made_up_to'])
+                ? Carbon::parse($item['next_made_up_to'])
+                : null,
         );
     }
 }

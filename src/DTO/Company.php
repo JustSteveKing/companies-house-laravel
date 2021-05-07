@@ -109,16 +109,24 @@ class Company extends DataTransferObject
             insolvencyHistory: $item['has_insolvency_history'] ?? null,
             jurisdiction: $item['jurisdiction'] ?? null,
             status: $item['company_status'] ?? null,
-            createdAt: Carbon::parse($item['date_of_creation']),
+            createdAt: isset($item['date_of_creation'])
+                ? Carbon::parse($item['date_of_creation'])
+                : null,
             sicCodes: $item['sic_codes'] ?? null,
             officeInDispute: $item['registered_office_is_in_dispute'] ?? null,
-            address: Address::hydrate($item['registered_office_address']),
-            confirmationStatement: ConfirmationStatement::hydrate(
-                item: $item['confirmation_statement'],
-            ),
-            accounts: Accounts::hydrate(
-                item: $item['accounts']
-            ),
+            address: isset($item['registered_office_address'])
+                ? Address::hydrate($item['registered_office_address'])
+                : null,
+            confirmationStatement: isset($item['confirmation_statement'])
+                ? ConfirmationStatement::hydrate(
+                    item: $item['confirmation_statement'],
+                )
+                : null,
+            accounts: isset($item['accounts'])
+                ? Accounts::hydrate(
+                    item: $item['accounts']
+                )
+                : null,
         );
     }
 }

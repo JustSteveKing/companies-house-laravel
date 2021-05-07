@@ -71,9 +71,9 @@ class SearchResultOfficer extends DataTransferObject
             addressSnippet: $item['address_snippet'] ?? null,
             link: $item['links']['self'] ?? null,
             appointmentCount: $item['appointment_count'] ?? null,
-            address: Address::hydrate(
+            address: isset($item['address']) ? Address::hydrate(
                 item: $item['address'],
-            ),
+            ) : null,
         );
     }
 }

@@ -71,10 +71,12 @@ class Officer extends DataTransferObject
             nationality: $item['nationality'] ?? null,
             countryOfResidence: $item['country_of_residence'] ?? null,
             appointmentId: static::getAppointmentIdFromLinks($item['links']),
-            appointedOn: Carbon::parse($item['appointed_on']),
-            address: Address::hydrate(
+            appointedOn: isset($item['appointed_on'])
+                ? Carbon::parse($item['appointed_on'])
+                : null,
+            address: isset($item['address']) ? Address::hydrate(
                 item: $item['address'],
-            ),
+            ) : null,
             dateOfBirth: DateOfBirth::hydrate(
                 item: $item['date_of_birth'] ?? null,
             ),

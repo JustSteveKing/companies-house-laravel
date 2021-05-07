@@ -40,9 +40,15 @@ class NextAccounts extends DataTransferObject
     {
         return new self(
             overdue: $item['overdue'],
-            dueOn: Carbon::parse($item['due_on']),
-            periodEndOn: Carbon::parse($item['period_end_on']),
-            periodStartOn: Carbon::parse($item['period_start_on']),
+            dueOn: isset($item['due_on'])
+                ? Carbon::parse($item['due_on'])
+                : null,
+            periodEndOn: isset($item['period_end_on'])
+                ? Carbon::parse($item['period_end_on'])
+                : null,
+            periodStartOn: isset($item['period_start_on'])
+                ? Carbon::parse($item['period_start_on'])
+                : null,
         );
     }
 }

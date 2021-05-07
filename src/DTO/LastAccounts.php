@@ -39,10 +39,16 @@ class LastAccounts extends DataTransferObject
     public static function hydrate(array $item): self
     {
         return new self(
-            periodStartOn: Carbon::parse($item['period_start_on']),
-            periodEndOn: Carbon::parse($item['period_end_on']),
+            periodStartOn: isset($item['period_start_on'])
+                ? Carbon::parse($item['period_start_on'])
+                : null,
+            periodEndOn: isset($item['period_end_on'])
+                ? Carbon::parse($item['period_end_on'])
+                : null,
             type: $item['type'] ?? null,
-            madeUpTo: Carbon::parse($item['made_up_to']),
+            madeUpTo: isset($item['made_up_to'])
+                ? Carbon::parse($item['made_up_to'])
+                : null,
         );
     }
 }
