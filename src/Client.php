@@ -1,154 +1,313 @@
 <?php
 
-namespace JustSteveKing\CompaniesHouseLaravel;
+declare(strict_types=1);
+
+namespace JustSteveKing\CompaniesHouse;
 
 use Illuminate\Support\Facades\Http;
-use JustSteveKing\CompaniesHouseLaravel\Collections\CompanyCollection;
-use JustSteveKing\CompaniesHouseLaravel\Collections\OfficerCollection;
-use JustSteveKing\CompaniesHouseLaravel\Data\Company;
-use JustSteveKing\CompaniesHouseLaravel\Data\Company\CompanyOfficer;
-use JustSteveKing\CompaniesHouseLaravel\Data\Company\SearchResult;
+use Illuminate\Http\Client\PendingRequest;
+use JustSteveKing\CompaniesHouse\DTO\Search;
+use JustSteveKing\CompaniesHouse\DTO\Officer;
+use JustSteveKing\CompaniesHouse\Concerns\HasFake;
+use JustSteveKing\CompaniesHouse\Collections\SearchCollection;
+use JustSteveKing\CompaniesHouse\Actions\Company\CreateCompany;
+use JustSteveKing\CompaniesHouse\Actions\Officer\CreateOfficer;
+use JustSteveKing\CompaniesHouse\Collections\OfficersCollection;
+use JustSteveKing\CompaniesHouse\Actions\Search\CreateSearchResults;
+use JustSteveKing\CompaniesHouse\DTO\Company;
 
 class Client
 {
+    use HasFake;
+    
     /**
-     * @var string
+     * Client constructor.
+     *
+     * @return void
      */
-    private string $key;
+    public function __construct(
+        protected string $url,
+        protected string $apiKey,
+        protected int|string $timeout = 10,
+        protected null|string|int $retryTimes = null,
+        protected null|string|int $retryMilliseconds = null,
+    ) {
+    }
 
     /**
-     * @var bool
+     * Make a new Client
+     *
+     * @return Client
      */
-    private bool $fake;
+    public static function make(
+        string $url,
+        string $apiKey,
+        int $timeout = 10,
+        null|int $retryTimes = null,
+        null|int $retryMilliseconds = null,
+    ): Client {
+        return new Client(
+            url: $url,
+            apiKey: $apiKey,
+            timeout: $timeout,
+            retryTimes: $retryTimes,
+            retryMilliseconds: $retryMilliseconds,
+        );
+    }
 
     /**
-     * @var array|null
+     * Build our default Request
+     *
+     * @return PendingRequest
      */
-    private ?array $fakeData;
-
-    /**
-     * CompaniesHouseLaravel constructor.
-     */
-    private function __construct(bool $fake = false, ?array $data = null)
+    public function buildRequest(): PendingRequest
     {
-        $this->fake = $fake;
-        $this->fakeData = $data;
-        $this->key = config('companies-house-laravel.api.key');
+        $request = Http::withBasicAuth(
+            username: $this->apiKey,
+            password: '',
+        )->withHeaders([
+            'Accept' => 'application/json'
+        ])->timeout(
+            seconds: (int) $this->timeout,
+        );
 
-        if ($this->fake) {
-            Http::fake($this->fakeData);
+        if (
+            ! is_null($this->retryTimes)
+            && ! is_null($this->retryMilliseconds)
+        ) {
+            $request->retry(
+                times: (int) $this->retryTimes,
+                sleep: (int) $this->retryMilliseconds,
+            );
         }
+
+        return $request;
     }
 
     /**
-     * @return self
-     */
-    public static function make(): self
-    {
-        return new self();
-    }
-
-    /**
-     * @return self
-     */
-    public static function fake(array $data): self
-    {
-        return new self(true, $data);
-    }
-
-    /**
-     * @param string $number
-     * @return Company|null
-     */
-    public function company(string $number):? Company
-    {
-        $response = Http::withBasicAuth(
-            $this->key,
-            ''
-        )
-            ->get(config('companies-house-laravel.api.url') . '/company/' . $number);
-
-        if ($response->ok()) {
-            return Company::fromApi($response->json());
-        }
-
-        return null;
-    }
-
-    /**
+     * Search everything
+     *
      * @param string $query
-     * @param int|null $perPage
-     * @param int|null $startIndex
-     * @return CompanyCollection|null
+     * @param string $prefix
+     * @param null|int $perPage
+     * @param null|int $startIndex
+     *
+     * @throws Illuminate\Http\Client\RequestException
+     *
+     * @return Search
      */
-    public function searchCompany(string $query, ?int $perPage = null, ?int $startIndex = null):? CompanyCollection
-    {
-        $response = Http::withBasicAuth(
-            $this->key,
-            ''
-        )->get(
-            config('companies-house-laravel.api.url') . '/search/companies',
-            [
+    public function search(
+        string $query,
+        string $prefix = '',
+        null|int $perPage = null,
+        null|int $startIndex = null,
+    ): Search {
+        $request = $this->buildRequest();
+
+        $response = $request->get(
+            url: "{$this->url}/search{$prefix}",
+            query: [
                 'q' => $query,
                 'items_per_page' => $perPage,
                 'start_index' => $startIndex,
-            ]
+            ],
         );
 
-        if (! $response->ok()) {
-            return null;
+        if (! $response->successful()) {
+            return $response->toException();
         }
 
-        $collection = new CompanyCollection();
+        $searchCollection = (new CreateSearchResults())->handle(
+            response: $response,
+        );
 
-        if (empty($response->json('items'))) {
-            return $collection;
-        }
-
-        foreach ($response->json('items') as $item) {
-            if (is_array($item)) {
-                $collection->add(
-                    SearchResult::fromApi($item)
-                );
-            }
-        }
-
-        return $collection;
+        return $searchCollection;
     }
 
     /**
-     * @param string $number
-     * @param int|null $perPage
-     * @param int|null $startIndex
-     * @return OfficerCollection|null
+     * Search companies
+     *
+     * @param string $query
+     * @param null|int $perPage
+     * @param null|int $startIndex
+     *
+     * @throws Illuminate\Http\Client\RequestException
+     *
+     * @return Search
      */
-    public function getOfficers(string $number, ?int $perPage = null, ?int $startIndex = null):? OfficerCollection
-    {
-        $response = Http::withBasicAuth(
-            $this->key,
-            ''
-        ) ->get(
-            config('companies-house-laravel.api.url') . '/company/' . $number . '/officers',
-            [
-                'items_per_page' => $perPage,
-                'start_index' => $startIndex,
-            ]
+    public function searchCompany(
+        string $query,
+        ?int $perPage = null,
+        ?int $startIndex = null,
+    ): Search {
+        return $this->search(
+            query: $query,
+            prefix: 'companies',
+            perPage: $perPage,
+            startIndex: $startIndex,
+        );
+    }
+
+    /**
+     * Search Officers
+     *
+     * @param string $query
+     * @param null|int $perPage
+     * @param null|int $startIndex
+     *
+     * @throws Illuminate\Http\Client\RequestException
+     *
+     * @return Search
+     */
+    public function searchOfficers(
+        string $query,
+        ?int $perPage = null,
+        ?int $startIndex = null,
+    ): Search {
+        return $this->search(
+            query: $query,
+            prefix: 'officers',
+            perPage: $perPage,
+            startIndex: $startIndex,
+        );
+    }
+
+    /**
+     * Search Disqualified Officers
+     *
+     * @param string $query
+     * @param null|int $perPage
+     * @param null|int $startIndex
+     *
+     * @throws Illuminate\Http\Client\RequestException
+     *
+     * @return Search
+     */
+    public function searchDisqualifiedOfficers(
+        string $query,
+        ?int $perPage = null,
+        ?int $startIndex = null,
+    ): Search {
+        return $this->search(
+            query: $query,
+            prefix: 'disqualified-officers',
+            perPage: $perPage,
+            startIndex: $startIndex,
+        );
+    }
+
+    /**
+     * Lookup a Company by their company number
+     *
+     * @param string $companyNumber
+     *
+     * @throws Illuminate\Http\Client\RequestException
+     *
+     * @return Company
+     */
+    public function company(
+        string $companyNumber,
+    ): Company {
+        $request = $this->buildRequest();
+
+        $response = $request->get(
+            url: "{$this->url}/company/{$companyNumber}"
         );
 
-        if (! $response->ok()) {
-            return null;
+        if (! $response->successful()) {
+            return $response->toException();
         }
 
-        $collection = new OfficerCollection();
+        $company = (new CreateCompany())->handle(
+            response: $response,
+        );
 
-        foreach ($response->json('items') as $item) {
-            if (is_array($item)) {
-                $collection->add(
-                    CompanyOfficer::fromApi($item)
-                );
-            }
+        return $company;
+    }
+
+    /**
+     * Retrieve all Company Officer as a Collection
+     *
+     * @param string $companyNumber
+     * @param null|int $perPage
+     * @param null|int $startIndex
+     *
+     * @throws Illuminate\Http\Client\RequestException
+     *
+     * @return OfficersCollection
+     */
+    public function officers(
+        string $companyNumber,
+        null|int $perPage = null,
+        null|int $startIndex = null,
+    ): OfficersCollection {
+        $request = $this->buildRequest();
+
+        $response = $request->get(
+            url: "{$this->url}/company/{$companyNumber}/officers",
+            query: [
+                'items_per_page' => $perPage,
+                'start_index' => $startIndex,
+            ],
+        );
+
+        if (! $response->successful()) {
+            return $response->toException();
+        }
+        
+        $data = $response->json();
+
+        $officerColection = new OfficersCollection();
+
+        if (is_null($data)) {
+            return $officerColection;
         }
 
-        return $collection;
+        foreach ($data['items'] as $item) {
+            $officer = (new CreateOfficer())->handle(
+                item: $item,
+            );
+            
+            $officerColection->add(
+                item: $officer,
+            );
+        }
+
+        return $officerColection;
+    }
+
+    /**
+     * Get a Company Officer by their appointment ID
+     *
+     * @param string $companyNumber
+     * @param string $appointmentId
+     *
+     * @throws Illuminate\Http\Client\RequestException
+     *
+     * @return Officer
+     */
+    public function officer(
+        string $companyNumber,
+        string $appointmentId
+    ): Officer {
+        $request = $this->buildRequest();
+
+        $response = $request->get(
+            url: "{$this->url}/company/{$companyNumber}/appointments/{$appointmentId}"
+        );
+
+        if (! $response->successful()) {
+            return $response->toException();
+        }
+
+        if (is_null($response->json())) {
+            return new Officer();
+        }
+
+        $officer = (new CreateOfficer())->handle(
+            item: $response->json(),
+        );
+
+        return $officer;
     }
 }

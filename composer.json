@@ -3,55 +3,60 @@
     "description": "A Laravel wrapper to get companies house information and validate company numbers",
     "keywords": [
         "juststeveking",
-        "companies-house-laravel"
+        "companies-house-laravel",
+        "api",
+        "validation",
+        "integration",
+        "companies house"
     ],
     "homepage": "https://github.com/juststeveking/companies-house-laravel",
     "license": "MIT",
     "authors": [
         {
+            "role": "Developer",
             "name": "Steve McDougall",
             "email": "juststevemcd@gmail.com",
-            "homepage": "https://www.juststeveking.uk/",
-            "role": "Developer"
+            "homepage": "https://www.juststeveking.uk/"
         }
     ],
     "require": {
-        "php": "^7.4|^8.0"
+        "php": "^8.0",
+        "illuminate/contracts": "^8.40",
+        "illuminate/support": "^8.0",
+        "spatie/data-transfer-object": "^3.1"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.16",
-        "guzzlehttp/guzzle": "^7.0",
+        "guzzlehttp/guzzle": "^7.3",
         "orchestra/testbench": "^6.0",
         "phpunit/phpunit": "^9.3",
         "vimeo/psalm": "^3.11"
     },
     "autoload": {
         "psr-4": {
-            "JustSteveKing\\CompaniesHouseLaravel\\": "src"
+            "JustSteveKing\\CompaniesHouse\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "JustSteveKing\\CompaniesHouseLaravel\\Tests\\": "tests"
+            "JustSteveKing\\CompaniesHouse\\Tests\\": "tests"
         }
     },
     "scripts": {
         "psalm": "vendor/bin/psalm",
         "test": "vendor/bin/phpunit -d memory_limit=512M --testdox",
         "test-coverage": "vendor/bin/phpunit --coverage-html coverage -d memory_limit=512M --testdox",
-        "format": "vendor/bin/php-cs-fixer fix --allow-risky=yes"
+        "format": "vendor/bin/php-cs-fixer fix src/"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "optimize-autoloader": true
     },
     "extra": {
         "laravel": {
             "providers": [
-                "JustSteveKing\\CompaniesHouseLaravel\\CompaniesHouseLaravelServiceProvider"
-            ],
-            "aliases": {
-                "ClientFacade": "JustSteveKing\\CompaniesHouseLaravel\\ClientFacade"
-            }
+                "JustSteveKing\\CompaniesHouse\\CompaniesHouseServiceProvider"
+            ]
         }
     },
     "minimum-stability": "dev",
