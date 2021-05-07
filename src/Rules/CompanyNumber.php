@@ -7,6 +7,7 @@ namespace JustSteveKing\CompaniesHouse\Rules;
 use Throwable;
 use JustSteveKing\CompaniesHouse\Client;
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Http\Client\RequestException;
 
 class CompanyNumber implements Rule
 {
@@ -26,15 +27,11 @@ class CompanyNumber implements Rule
      */
     public function passes($attributes, $value): bool
     {
-        try {
-            $response = $this->client->company(
-                companyNumber: $value,
-            );
-        } catch (Throwable) {
-            return false;
-        }
+        $response = $this->client->company(
+            companyNumber: $value,
+        );
 
-        return true;
+        return ! ($response instanceof RequestException);
     }
 
     /**

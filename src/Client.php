@@ -6,15 +6,15 @@ namespace JustSteveKing\CompaniesHouse;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\RequestException;
 use JustSteveKing\CompaniesHouse\DTO\Search;
+use JustSteveKing\CompaniesHouse\DTO\Company;
 use JustSteveKing\CompaniesHouse\DTO\Officer;
 use JustSteveKing\CompaniesHouse\Concerns\HasFake;
-use JustSteveKing\CompaniesHouse\Collections\SearchCollection;
 use JustSteveKing\CompaniesHouse\Actions\Company\CreateCompany;
 use JustSteveKing\CompaniesHouse\Actions\Officer\CreateOfficer;
 use JustSteveKing\CompaniesHouse\Collections\OfficersCollection;
 use JustSteveKing\CompaniesHouse\Actions\Search\CreateSearchResults;
-use JustSteveKing\CompaniesHouse\DTO\Company;
 
 class Client
 {
@@ -94,14 +94,14 @@ class Client
      *
      * @throws Illuminate\Http\Client\RequestException
      *
-     * @return Search
+     * @return Search|RequestException
      */
     public function search(
         string $query,
         string $prefix = '',
         null|int $perPage = null,
         null|int $startIndex = null,
-    ): Search {
+    ): Search|RequestException {
         $request = $this->buildRequest();
 
         $response = $request->get(
@@ -133,13 +133,13 @@ class Client
      *
      * @throws Illuminate\Http\Client\RequestException
      *
-     * @return Search
+     * @return Search|RequestException
      */
     public function searchCompany(
         string $query,
         ?int $perPage = null,
         ?int $startIndex = null,
-    ): Search {
+    ): Search|RequestException {
         return $this->search(
             query: $query,
             prefix: 'companies',
@@ -157,13 +157,13 @@ class Client
      *
      * @throws Illuminate\Http\Client\RequestException
      *
-     * @return Search
+     * @return Search|RequestException
      */
     public function searchOfficers(
         string $query,
         ?int $perPage = null,
         ?int $startIndex = null,
-    ): Search {
+    ): Search|RequestException {
         return $this->search(
             query: $query,
             prefix: 'officers',
@@ -181,13 +181,13 @@ class Client
      *
      * @throws Illuminate\Http\Client\RequestException
      *
-     * @return Search
+     * @return Search|RequestException
      */
     public function searchDisqualifiedOfficers(
         string $query,
         ?int $perPage = null,
         ?int $startIndex = null,
-    ): Search {
+    ): Search|RequestException {
         return $this->search(
             query: $query,
             prefix: 'disqualified-officers',
@@ -203,11 +203,11 @@ class Client
      *
      * @throws Illuminate\Http\Client\RequestException
      *
-     * @return Company
+     * @return Company|RequestException
      */
     public function company(
         string $companyNumber,
-    ): Company {
+    ): Company|RequestException {
         $request = $this->buildRequest();
 
         $response = $request->get(
@@ -234,13 +234,13 @@ class Client
      *
      * @throws Illuminate\Http\Client\RequestException
      *
-     * @return OfficersCollection
+     * @return OfficersCollection|RequestException
      */
     public function officers(
         string $companyNumber,
         null|int $perPage = null,
         null|int $startIndex = null,
-    ): OfficersCollection {
+    ): OfficersCollection|RequestException {
         $request = $this->buildRequest();
 
         $response = $request->get(
@@ -284,12 +284,12 @@ class Client
      *
      * @throws Illuminate\Http\Client\RequestException
      *
-     * @return Officer
+     * @return Officer|RequestException
      */
     public function officer(
         string $companyNumber,
         string $appointmentId
-    ): Officer {
+    ): Officer|RequestException {
         $request = $this->buildRequest();
 
         $response = $request->get(
