@@ -46,6 +46,11 @@ class Officer extends DataTransferObject
     public null|Carbon $appointedOn;
 
     /**
+     * @var null|Carbon
+     */
+    public null|Carbon $resignedOn;
+
+    /**
      * @var null|Address
      */
     public null|Address $address;
@@ -73,6 +78,9 @@ class Officer extends DataTransferObject
             appointmentId: static::getAppointmentIdFromLinks($item['links']),
             appointedOn: isset($item['appointed_on'])
                 ? Carbon::parse($item['appointed_on'])
+                : null,
+            resignedOn: isset($item['resigned_on'])
+                ? Carbon::parse($item['resigned_on'])
                 : null,
             address: isset($item['address']) ? Address::hydrate(
                 item: $item['address'],
