@@ -26,6 +26,11 @@ class Address extends DataTransferObject
     /**
      * @var null|string
      */
+    public null|string $region;
+
+    /**
+     * @var null|string
+     */
     public null|string $country;
 
     /**
@@ -47,10 +52,12 @@ class Address extends DataTransferObject
      */
     public static function hydrate(array $item): self
     {
+
         return new self(
             postalCode: $item['postal_code'] ?? null,
             locality: $item['locality'] ?? null,
             premises: $item['premises'] ?? null,
+            region: $item['region'] ?? null,
             country: $item['country'] ?? null,
             addressLine1: $item['address_line_1'] ?? null,
             addressLine2: $item['address_line_2'] ?? null,
