@@ -56,7 +56,7 @@ To get a company profile, you can quite simply:
 ```php
 use JustSteveKing\CompaniesHouse\Client;
 
-class CompanyController extends Controler
+class CompanyController extends Controller
 {
     public function __construct(
         protected Client $service,
@@ -79,7 +79,7 @@ You can get a `Collection` of Company Officers using the companies number:
 ```php
 use JustSteveKing\CompaniesHouse\Client;
 
-class CompanyOfficersController extends Controler
+class CompanyOfficersController extends Controller
 {
     public function __construct(
         protected Client $service,
@@ -102,7 +102,7 @@ You can get an `Officer` from a company using the company number and their appoi
 ```php
 use JustSteveKing\CompaniesHouse\Client;
 
-class CompanyOfficerController extends Controler
+class CompanyOfficerController extends Controller
 {
     public function __construct(
         protected Client $service,
@@ -136,7 +136,7 @@ This will return a `SearchCollection`
 ```php
 use JustSteveKing\CompaniesHouse\Client;
 
-class CompanySearchController extends Controler
+class CompanySearchController extends Controller
 {
     public function __construct(
         protected Client $service,
@@ -161,7 +161,7 @@ This will return a `SearchCollection`
 ```php
 use JustSteveKing\CompaniesHouse\Client;
 
-class OfficersSearchController extends Controler
+class OfficersSearchController extends Controller
 {
     public function __construct(
         protected Client $service,
@@ -186,7 +186,7 @@ This will return a `SearchCollection`
 ```php
 use JustSteveKing\CompaniesHouse\Client;
 
-class SearchController extends Controler
+class SearchController extends Controller
 {
     public function __construct(
         protected Client $service,
